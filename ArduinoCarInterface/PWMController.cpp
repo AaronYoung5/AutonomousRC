@@ -1,0 +1,69 @@
+#include "PWMController.h"
+
+PWMController::PWMController(PWMController::CONTROLLER_TYPE type, int pin) {
+  servo.attach(pin);
+
+  if (type == PWMController::STEERING_NORMAL) {
+    MIN_DUTY_CYCLE = STEERING_NORMAL_DUTY_LEFT;
+    MAX_DUTY_CYCLE = STEERING_NORMAL_DUTY_RIGHT;
+    NEUTRAL_DUTY_CYCLE = STEERING_NORMAL_DUTY_NEUTRAL + TRIM_DUTY;
+    MAX_DUTY_DELTA = STEERING_MAX_DUTY_ACCEL;
+
+    MIN_PW = STEERING_NORMAL_PW_LEFT;
+    MAX_PW = STEERING_NORMAL_PW_RIGHT;
+    NEUTRAL_PW = STEERING_NORMAL_PW_NEUTRAL + TRIM_PW;
+    MAX_PW_DELTA = STEERING_MAX_PW_ACCEL;
+  } else if (type == PWMController::STEERING_REVERSE) {
+    MIN_DUTY_CYCLE = STEERING_REVERSE_DUTY_LEFT;
+    MAX_DUTY_CYCLE = STEERING_REVERSE_DUTY_RIGHT;
+    NEUTRAL_DUTY_CYCLE = STEERING_REVERSE_DUTY_NEUTRAL + TRIM_DUTY;
+    MAX_DUTY_DELTA = STEERING_MAX_DUTY_ACCEL;
+
+    MIN_PW = STEERING_REVERSE_PW_LEFT;
+    MAX_PW = STEERING_REVERSE_PW_RIGHT;
+    NEUTRAL_PW = STEERING_REVERSE_PW_NEUTRAL + TRIM_PW;
+    MAX_PW_DELTA = STEERING_MAX_PW_ACCEL;
+  } else if (type == PWMController::MOTOR_NORMAL) {
+    MIN_DUTY_CYCLE = MOTOR_NORMAL_DUTY_LEFT;
+    MAX_DUTY_CYCLE = MOTOR_NORMAL_DUTY_RIGHT;
+    NEUTRAL_DUTY_CYCLE = MOTOR_NORMAL_DUTY_NEUTRAL - TRIM_DUTY;
+    MAX_DUTY_DELTA = MOTOR_MAX_DUTY_ACCEL;
+
+    MIN_PW = MOTOR_NORMAL_PW_LEFT;
+    MAX_PW = MOTOR_NORMAL_PW_RIGHT;
+    NEUTRAL_PW = MOTOR_NORMAL_PW_NEUTRAL - TRIM_PW;
+    MAX_PW_DELTA = MOTOR_MAX_PW_ACCEL;
+  } else if (type == PWMController::MOTOR_REVERSE) {
+    MIN_DUTY_CYCLE = MOTOR_REVERSE_DUTY_LEFT;
+    MAX_DUTY_CYCLE = MOTOR_REVERSE_DUTY_RIGHT;
+    NEUTRAL_DUTY_CYCLE = MOTOR_REVERSE_DUTY_NEUTRAL - TRIM_DUTY;
+    MAX_DUTY_DELTA = MOTOR_MAX_DUTY_ACCEL;
+
+    MIN_PW = MOTOR_REVERSE_PW_LEFT;
+    MAX_PW = MOTOR_REVERSE_PW_RIGHT;
+    NEUTRAL_PW = MOTOR_REVERSE_PW_NEUTRAL - TRIM_PW;
+    MAX_PW_DELTA = MOTOR_MAX_PW_ACCEL;
+  }
+}
+
+PWMController::~PWMController() {}
+
+void PWMController::SetPosition(PWMController::CONTROLLER_POSITION position) {
+  switch (position) {
+    case PWMController::NEUTRAL:
+    this->servo.writeMicroseconds(NEUTRAL_PW * 1000);
+    break;
+    case PWMController::MAX:
+    this->servo.writeMicroseconds(MAX_PW * 1000);
+    break;
+    case PWMController::MIN:
+    this->servo.writeMicroseconds(MIN_PW * 1000);
+    break;
+  }
+}
+
+void PWMController::Neutral() { this->servo.writeMicroseconds(NEUTRAL_PW); }
+
+void PWMController::Maximum() { this->servo.writeMicroseconds(MAX_PW); }
+
+void PWMController::Minimum() { this->servo.writeMicroseconds(MIN_PW); }
