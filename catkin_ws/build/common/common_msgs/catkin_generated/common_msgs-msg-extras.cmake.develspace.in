@@ -1,0 +1,2 @@
+set(common_msgs_MESSAGE_FILES "/home/aaron/AutonomousRC/catkin_ws/src/common/common_msgs/msg/Cone.msg;/home/aaron/AutonomousRC/catkin_ws/src/common/common_msgs/msg/ConeMap.msg;/home/aaron/AutonomousRC/catkin_ws/src/common/common_msgs/msg/Control.msg;/home/aaron/AutonomousRC/catkin_ws/src/common/common_msgs/msg/VehState.msg;/home/aaron/AutonomousRC/catkin_ws/src/common/common_msgs/msg/PIDDebug.msg")
+set(common_msgs_SERVICE_FILES "")

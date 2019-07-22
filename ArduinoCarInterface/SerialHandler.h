@@ -1,17 +1,18 @@
+#pragma once
+
+#include "Common.h"
+
 class SerialHandler {
-  public:
-    // Public class variables
-    enum MessageType {
-      STEERING,
-      THROTTLE,
-      BRAKING
-    };
+public:
+  // Public class variables
+  enum MessageType { STEERING, THROTTLE, BRAKING };
 
-  private:
-    // Private class variables
+private:
+  // Private class variables
 
-  public:
-    // Public methods
+public:
+  // Public methods
+    SerialHandler();
 
   private:
     // Private methods
