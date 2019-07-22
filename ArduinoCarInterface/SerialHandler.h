@@ -1,19 +1,31 @@
 #pragma once
 
 #include "Common.h"
+#include <Thread.h>
 
-class SerialHandler {
+class SerialHandler : public Thread {
 public:
   // Public class variables
-  enum MessageType { STEERING, THROTTLE, BRAKING };
+  enum ControlMessageType { STEERING, THROTTLE, BRAKING };
+  struct ControlMessage {
+    float throttle;
+    float braking;
+    float steering;
+  } message;
 
 private:
   // Private class variables
 
 public:
   // Public methods
-    SerialHandler();
+  SerialHandler();
 
-  private:
-    // Private methods
+  void run();
+
+  struct ControlMessage GetMessage() {
+    return message;
+  }
+
+private:
+  // Private methods
 };

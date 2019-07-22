@@ -4,7 +4,7 @@
 
 namespace Common {
 // Constants
-const long BAUD_RATE = 115200;
+static const long BAUD_RATE = 115200;
 
 // Methods
 static void blink() {

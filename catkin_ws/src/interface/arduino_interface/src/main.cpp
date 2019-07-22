@@ -10,16 +10,29 @@
 
 serial::Serial ser;
 
+enum ControlType { THROTTLE, BRAKING, STEERING };
+
+struct ControlMessage {
+  float throttle;
+  float braking;
+  float steering;
+} message;
+
 void controlCallback(const common_msgs::Control::ConstPtr &msg) {
-  std::cout << "TEST" << std::endl;
+  // std::cout << "Sending Control Message" << std::endl;
+  message = ControlMessage{msg->throttle, msg->braking, msg->steering};
+  int size = sizeof(message);
+  uint8_t *buffer = (uint8_t *)malloc(size + 4);
+  memcpy(buffer + 4, &message, size);
+  buffer[0] = size;
+  ser.write(buffer, sizeof(message) + 4);
 }
 
 int main(int argc, char **argv) {
   ros::init(argc, argv, "arduino_interface");
   ros::NodeHandle n;
 
-  ros::Subscriber write_sub =
-      n.subscribe("keyboard_control", 10, controlCallback);
+  ros::Subscriber write_sub = n.subscribe("control", 10, controlCallback);
 
   try {
     ser.setPort("/dev/ttyACM0");
