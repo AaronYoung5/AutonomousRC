@@ -1,8 +1,0 @@
-prefix=/home/aaron/AutonomousRC/catkin_ws/install
-
-Name: arduino_interface
-Description: Description of arduino_interface
-Version: 0.0.0
-Cflags: 
-Libs: -L/home/aaron/AutonomousRC/catkin_ws/install/lib 
-Requires: std_msgs serial

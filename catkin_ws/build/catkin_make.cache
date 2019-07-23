@@ -1,2 +1,0 @@
-common/common_msgs:common/common_srvs:common/common_utilities:control/keyboard_control:interface/arduino_interface
--DCATKIN_DEVEL_PREFIX=/home/aaron/AutonomousRC/catkin_ws/devel -DCMAKE_INSTALL_PREFIX=/home/aaron/AutonomousRC/catkin_ws/install -G Unix Makefiles
