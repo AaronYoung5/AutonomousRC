@@ -41,8 +41,6 @@ PWMController::~PWMController() {}
 void PWMController::run() {
   pulsewidth =
       pulsewidth > MAX_PW ? MAX_PW : pulsewidth < MIN_PW ? MIN_PW : pulsewidth;
-  // if (abs(pulsewidth - 1.10) > 1e-2 && abs(pulsewidth - 2.00) > 1e-2)
-  //   Serial.println(abs(pulsewidth - 1.10));
   this->servo.writeMicroseconds(pulsewidth * 1000);
 }
 

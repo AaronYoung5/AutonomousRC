@@ -15,5 +15,8 @@ void SerialHandler::run() {
     uint8_t messageBuffer[size];
     Serial.readBytes(messageBuffer, size);
     message = *((struct ControlMessage *)messageBuffer);
+    // Serial.println(message.throttle);
+    // Serial.println(message.braking);
+    // Serial.println(message.steering);
   }
 }

@@ -45,6 +45,8 @@ void loop() {
   motorController->SetPercent(serialHandler->GetMessage().throttle);
   steeringController->SetPercent(serialHandler->GetMessage().steering);
 
+  Serial.println(serialHandler->GetMessage().throttle);
+
   // Serial.println("Steering Position :: MAX");
   // steeringController->SetPosition(PWMController::MAX);
   // delay(2000);

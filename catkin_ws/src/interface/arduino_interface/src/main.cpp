@@ -26,6 +26,7 @@ void controlCallback(const common_msgs::Control::ConstPtr &msg) {
   memcpy(buffer + 4, &message, size);
   buffer[0] = size;
   ser.write(buffer, sizeof(message) + 4);
+  std::cout << "Data Sent :: " << (*(struct ControlMessage *)(buffer + 4)).throttle << std::endl;
 }
 
 int main(int argc, char **argv) {
@@ -41,23 +42,26 @@ int main(int argc, char **argv) {
     ser.setTimeout(to);
     ser.open();
   } catch (serial::IOException &e) {
-    ROS_ERROR_STREAM("Unable to open port ");
+    std::cout << "Serial Port Initialization Unsuccessful" << std::endl;
+    ser.close();
+    ros::shutdown();
     return -1;
   }
 
   if (ser.isOpen()) {
-    ROS_INFO_STREAM("Serial Port initialized");
+    std::cout << "Serial Port Initializated" << std::endl;
   } else {
+    ser.close();
+    ros::shutdown();
     return -1;
   }
 
   while (ros::ok()) {
 
     if (ser.available()) {
-      ROS_INFO_STREAM("Reading from serial port");
+      // ROS_INFO_STREAM("Reading from serial port");
       std_msgs::String result;
       result.data = ser.read(ser.available());
-      // ROS_INFO_STREAM("Read: " << result.data);
       std::cout << "Data Received :: " << result.data.c_str() << std::endl;
     }
 
