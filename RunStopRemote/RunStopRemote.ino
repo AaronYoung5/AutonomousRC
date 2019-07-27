@@ -1,23 +1,24 @@
-#include <ESP8266WiFi.h>
-#include <ArduinoOTA.h>
-#include "LED.h"
 #include "Constants.h"
+#include "LED.h"
 #include "Switch.h"
+#include <ArduinoOTA.h>
+#include <ESP8266WiFi.h>
 
 LED statusLED(LED_STATUS_PIN);
 Switch powerSwitch(POWER_PIN);
 Switch autoSwitch(AUTO_SWITCH_PIN);
 
-IPAddress ip(192, 168, 0, 80);            // IP address of the server
+IPAddress ip(192, 168, 0, 80); // IP address of the server
 
-const char* ssid = "AutonomousRC";               // SSID of your home WiFi
-const char* pass = "AutonomousRC";               // password of your home WiFi
+const char *ssid = "AutonomousRC"; // SSID of your home WiFi
+const char *pass = "AutonomousRC"; // password of your home WiFi
 WiFiClient client;
 
-const char *OTAName = "AutonomousRC";      // A name and a password for the OTA service
+// A name and a password for the OTA service
+const char *OTAName = "AutonomousRC";
 const char *OTAPassword = "";
 
-enum Command {POWER, AUTO};
+enum Command { POWER, AUTO };
 
 struct Message {
   Command command;
@@ -26,31 +27,27 @@ struct Message {
 void setup() {
   Serial.begin(BAUD_RATE);
 
-  pinMode(AUTO_SWITCH_PIN, OUTPUT);
-  pinMode(POWER_PIN, OUTPUT);
-
-  digitalWrite(AUTO_SWITCH_PIN, OFF);
-  digitalWrite(POWER_PIN, OFF);
-
   startWiFi();
   startOTA();
 }
 
-void loop () {
+void loop() {
   if (powerSwitch.isActive()) {
-    powerSwitch.getState() ? powerSwitch.setState(OFF) : powerSwitch.setState(ON);
+    powerSwitch.getState() ? powerSwitch.setState(OFF)
+                           : powerSwitch.setState(ON);
     Serial.println("Power Button Pressed");
     Serial.print("Power Button State :: ");
     Serial.println(powerSwitch.getState());
-      Serial.print("Power Message Command :: ");
-      Serial.println(POWER);
+    Serial.print("Power Message Command :: ");
+    Serial.println(POWER);
     Message message{POWER};
     send(message);
   }
 
   if (powerSwitch.getState()) {
     if (autoSwitch.isActive()) {
-      autoSwitch.getState() ? autoSwitch.setState(OFF) : autoSwitch.setState(ON);
+      autoSwitch.getState() ? autoSwitch.setState(OFF)
+                            : autoSwitch.setState(ON);
       Serial.println("Auto Button Pressed");
       Serial.print("Auto Button State :: ");
       Serial.println(autoSwitch.getState());
@@ -62,7 +59,7 @@ void loop () {
   }
 }
 
-void send(Message& message) {
+void send(Message &message) {
   Serial.println("Message Command Sent :: ");
   Serial.println(message.command);
   client.connect(ip, 80);
@@ -87,13 +84,6 @@ void startWiFi() {
     Serial.print(".");
     statusLED.blink(2, 250);
   }
-  Serial.println();
-  Serial.println("Connected");
-  Serial.println("station_bare_01.ino");
-  Serial.print("LocalIP:"); Serial.println(WiFi.localIP());
-  Serial.println("MAC:" + WiFi.macAddress());
-  Serial.print("Gateway:"); Serial.println(WiFi.gatewayIP());
-  Serial.print("AP MAC:"); Serial.println(WiFi.BSSIDstr());
   statusLED.blink();
 }
 
@@ -104,22 +94,23 @@ void startOTA() {
   ArduinoOTA.setHostname(OTAName);
   ArduinoOTA.setPassword(OTAPassword);
 
-  ArduinoOTA.onStart([]() {
-    Serial.println("Start");
-  });
-  ArduinoOTA.onEnd([]() {
-    Serial.println("\r\nEnd");
-  });
+  ArduinoOTA.onStart([]() { Serial.println("Start"); });
+  ArduinoOTA.onEnd([]() { Serial.println("\r\nEnd"); });
   ArduinoOTA.onProgress([](unsigned int progress, unsigned int total) {
     Serial.printf("Progress: %u%%\r", (progress / (total / 100)));
   });
   ArduinoOTA.onError([](ota_error_t error) {
     Serial.printf("Error[%u]: ", error);
-    if (error == OTA_AUTH_ERROR) Serial.println("Auth Failed");
-    else if (error == OTA_BEGIN_ERROR) Serial.println("Begin Failed");
-    else if (error == OTA_CONNECT_ERROR) Serial.println("Connect Failed");
-    else if (error == OTA_RECEIVE_ERROR) Serial.println("Receive Failed");
-    else if (error == OTA_END_ERROR) Serial.println("End Failed");
+    if (error == OTA_AUTH_ERROR)
+      Serial.println("Auth Failed");
+    else if (error == OTA_BEGIN_ERROR)
+      Serial.println("Begin Failed");
+    else if (error == OTA_CONNECT_ERROR)
+      Serial.println("Connect Failed");
+    else if (error == OTA_RECEIVE_ERROR)
+      Serial.println("Receive Failed");
+    else if (error == OTA_END_ERROR)
+      Serial.println("End Failed");
   });
   ArduinoOTA.begin();
   Serial.println("OTA ready\r\n");
