@@ -10,25 +10,27 @@
 
 serial::Serial ser;
 
-enum ControlType { THROTTLE, BRAKING, STEERING };
+enum ControlType {
+  STEERING,
+  THROTTLE,
+};
 
 struct ControlMessage {
   float throttle;
-  float braking;
   float steering;
+  uint8_t padding = 0;
 } message;
 
 void controlCallback(const common_msgs::Control::ConstPtr &msg) {
-  // std::cout << "Sending Control Message" << std::endl;
-  message = ControlMessage{msg->throttle, msg->braking, msg->steering};
+  message = ControlMessage{msg->throttle, msg->steering};
   int size = sizeof(message);
-  uint8_t *buffer = (uint8_t *)malloc(size + 4);
+  uint8_t buffer[size + 4];
   memcpy(buffer + 4, &message, size);
   buffer[0] = size;
   ser.flush();
-  ser.write(buffer, sizeof(message) + 4);
-  std::cout << "Data Sent :: "
-            << (*(struct ControlMessage *)(buffer + 4)).throttle << std::endl;
+  ser.write(buffer, size);
+  std::cout << "Steering Sent :: "
+            << (*(struct ControlMessage *)(buffer + 4)).steering << std::endl;
 }
 
 int main(int argc, char **argv) {
@@ -60,9 +62,12 @@ int main(int argc, char **argv) {
 
   while (ros::ok()) {
     if (ser.available()) {
-      std_msgs::String result;
-      result.data = ser.read(ser.available());
-      std::cout << "Data Received :: " << result.data.c_str() << std::endl;
+      std::cout << "Data Received :: ";
+      while (ser.available()) {
+        std::string data = ser.read();
+        std::cout << data;
+      }
+      std::cout << std::endl;
     }
 
     ros::spinOnce();

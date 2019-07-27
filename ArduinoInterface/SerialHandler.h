@@ -6,12 +6,12 @@
 class SerialHandler : public Thread {
 public:
   // Public class variables
-  enum ControlMessageType { STEERING, THROTTLE, BRAKING };
+  enum ControlMessageType { STEERING, THROTTLE };
   struct ControlMessage {
-    float throttle;
-    float braking;
-    float steering;
-  } message;
+  float throttle;
+  float steering;
+  uint8_t padding = 0;
+} message;
 
 private:
   // Private class variables

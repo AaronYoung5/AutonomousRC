@@ -23,10 +23,9 @@ private:
 
   float throttle_;
   float steering_;
-  float braking_;
 };
 
-Teleop::Teleop() : throttle_(0), steering_(0), braking_(0) {
+Teleop::Teleop() : throttle_(0), steering_(0) {
   pub = n.advertise<common_msgs::Control>("control", 1000);
 };
 
@@ -66,12 +65,10 @@ void Teleop::keyLoop() {
       break;
     case KEYCODE_U:
       throttle_ += .01;
-      braking_ -= .025;
       // ROS_INFO("UP");
       dirty = true;
       break;
     case KEYCODE_D:
-      braking_ += .01;
       throttle_ -= .025;
       // ROS_INFO("DOWN");
       dirty = true;
@@ -84,7 +81,6 @@ void Teleop::keyLoop() {
       common_msgs::Control msg;
       msg.throttle = throttle_;
       msg.steering = steering_;
-      msg.braking = braking_;
       pub.publish(msg);
       dirty = false;
     }
@@ -92,9 +88,8 @@ void Teleop::keyLoop() {
 }
 
 void Teleop::clamp() {
-  throttle_ = throttle_ > 1 ? 1 : throttle_ < 0 ? 0 : throttle_;
+  throttle_ = throttle_ > 1 ? 1 : throttle_ < -1 ? -1 : throttle_;
   steering_ = steering_ > 1 ? 1 : steering_ < -1 ? -1 : steering_;
-  braking_ = braking_ > 1 ? 1 : braking_ < 0 ? 0 : braking_;
 }
 
 void quit(int sig) {

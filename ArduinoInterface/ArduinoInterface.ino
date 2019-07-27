@@ -1,6 +1,7 @@
-atom #include "Common.h"
+#include "Common.h"
 #include "PWMController.h"
 #include "SerialHandler.h"
+// #include <LiquidCrystal.h>
 
 using namespace Common;
 
@@ -8,15 +9,19 @@ using namespace Common;
 const int STEERING_PIN = 9; // Pin on arduino
 
 // --- Motor --- //
-const int MOTOR_PIN = 5;
+const int MOTOR_PIN = 6;
 
 // Custom objects
 SerialHandler *serialHandler;
 PWMController *motorController;
 PWMController *steeringController;
 
+// const int rs = 12, en = 11, d4 = 5, d5 = 4, d6 = 3, d7 = 2;
+// LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
+
 void setup() {
   Serial.begin(BAUD_RATE);
+  // lcd.begin(16, 2);
   serialHandler = new SerialHandler();
   motorController = new PWMController(PWMController::MOTOR_NORMAL, MOTOR_PIN);
   steeringController =
@@ -36,14 +41,18 @@ void loop() {
   if (serialHandler->shouldRun())
     serialHandler->run();
 
-  if (motorController->shouldRun())
+  if (motorController->shouldRun()) {
+    // lcd.print((float)serialHandler->GetMessage().throttle);
+    motorController->SetPercent(serialHandler->GetMessage().throttle);
     motorController->run();
+  }
 
-  if (steeringController->shouldRun())
+  if (steeringController->shouldRun()) {
+    // lcd.setCursor(0, 0);
+    // lcd.print((float)serialHandler->GetMessage().steering);
+    steeringController->SetPercent(serialHandler->GetMessage().steering);
     steeringController->run();
-
-  motorController->SetPercent(serialHandler->GetMessage().throttle);
-  steeringController->SetPercent(serialHandler->GetMessage().steering);
+  }
 
   // Serial.println(serialHandler->GetMessage().throttle);
 
