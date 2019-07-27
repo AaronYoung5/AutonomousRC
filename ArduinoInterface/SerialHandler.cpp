@@ -4,6 +4,7 @@ SerialHandler::SerialHandler() : Thread() {
   // Thread will start enabled
   enabled = true;
   setInterval(100); // Sets the interval to be 100ms
+  Serial.setTimeout(50);
 }
 
 void SerialHandler::run() {

@@ -1,4 +1,4 @@
-#include "Common.h"
+atom #include "Common.h"
 #include "PWMController.h"
 #include "SerialHandler.h"
 
@@ -45,7 +45,7 @@ void loop() {
   motorController->SetPercent(serialHandler->GetMessage().throttle);
   steeringController->SetPercent(serialHandler->GetMessage().steering);
 
-  Serial.println(serialHandler->GetMessage().throttle);
+  // Serial.println(serialHandler->GetMessage().throttle);
 
   // Serial.println("Steering Position :: MAX");
   // steeringController->SetPosition(PWMController::MAX);

@@ -25,8 +25,10 @@ void controlCallback(const common_msgs::Control::ConstPtr &msg) {
   uint8_t *buffer = (uint8_t *)malloc(size + 4);
   memcpy(buffer + 4, &message, size);
   buffer[0] = size;
+  ser.flush();
   ser.write(buffer, sizeof(message) + 4);
-  std::cout << "Data Sent :: " << (*(struct ControlMessage *)(buffer + 4)).throttle << std::endl;
+  std::cout << "Data Sent :: "
+            << (*(struct ControlMessage *)(buffer + 4)).throttle << std::endl;
 }
 
 int main(int argc, char **argv) {
@@ -57,9 +59,7 @@ int main(int argc, char **argv) {
   }
 
   while (ros::ok()) {
-
     if (ser.available()) {
-      // ROS_INFO_STREAM("Reading from serial port");
       std_msgs::String result;
       result.data = ser.read(ser.available());
       std::cout << "Data Received :: " << result.data.c_str() << std::endl;
