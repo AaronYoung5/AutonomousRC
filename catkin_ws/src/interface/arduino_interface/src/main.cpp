@@ -29,6 +29,8 @@ void controlCallback(const common_msgs::Control::ConstPtr &msg) {
   buffer[0] = size;
   ser.flush();
   ser.write(buffer, size);
+  std::cout << "Motor Sent :: "
+            << (*(struct ControlMessage *)(buffer + 4)).throttle << std::endl;
   std::cout << "Steering Sent :: "
             << (*(struct ControlMessage *)(buffer + 4)).steering << std::endl;
 }
