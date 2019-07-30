@@ -1,7 +1,7 @@
 #include "PWMController.h"
 
 PWMController::PWMController(PWMController::CONTROLLER_TYPE type, int pin)
-    : Thread(), type(type), TRIM_PW(0), lcd(rs, en, d4, d5, d6, d7) {
+    : Thread(), type(type), TRIM_PW(0) {
   servo.attach(pin);
 
   setInterval(100); // Sets interval to 100ms
@@ -34,7 +34,7 @@ PWMController::PWMController(PWMController::CONTROLLER_TYPE type, int pin)
   }
 
   pulsewidth = NEUTRAL_PW;
-  lcd.begin(16, 2);
+  // lcd.begin(16, 2);
 }
 
 PWMController::~PWMController() {}
@@ -56,14 +56,14 @@ void PWMController::SetPercent(float percent) {
   case PWMController::MOTOR_NORMAL:
   case PWMController::MOTOR_REVERSE:
     pulsewidth = map(percent, -1, 1, MIN_PW, MAX_PW);
-    lcd.setCursor(0, 0);
-    lcd.print("M PW: " + String((float)pulsewidth));
+    // lcd.setCursor(0, 0);
+    // lcd.print("M PW: " + String((float)pulsewidth));
     break;
   case PWMController::STEERING_NORMAL:
   case PWMController::STEERING_REVERSE:
     pulsewidth = map(percent, -1, 1, MIN_PW, MAX_PW);
-    lcd.setCursor(0, 1);
-    lcd.print("S PW: " + String((float)pulsewidth));
+    // lcd.setCursor(0, 1);
+    // lcd.print("S PW: " + String((float)pulsewidth));
 
     break;
   }

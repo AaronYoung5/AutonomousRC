@@ -3,7 +3,7 @@
 #include <Servo.h>
 #include <Thread.h>
 
-#include <LiquidCrystal.h>
+// #include <LiquidCrystal.h>
 
 // Average Duty Cycle by command, <Motor to control>_<Reverse or
 // Normal>_<Neutral, forward, or back>
@@ -45,8 +45,8 @@ private:
   float pulsewidth;
 
   Servo servo;
-  const int rs = 12, en = 11, d4 = 5, d5 = 4, d6 = 3, d7 = 2;
-  LiquidCrystal lcd;
+  // const int rs = 12, en = 11, d4 = 5, d5 = 4, d6 = 3, d7 = 2;
+  // LiquidCrystal lcd;
 
   PWMController::CONTROLLER_TYPE type;
 
