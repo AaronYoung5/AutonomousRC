@@ -34,7 +34,6 @@ PWMController::PWMController(PWMController::CONTROLLER_TYPE type, int pin)
   }
 
   pulsewidth = NEUTRAL_PW;
-  // lcd.begin(16, 2);
 }
 
 PWMController::~PWMController() {}
@@ -56,14 +55,14 @@ void PWMController::SetPercent(float percent) {
   case PWMController::MOTOR_NORMAL:
   case PWMController::MOTOR_REVERSE:
     pulsewidth = map(percent, -1, 1, MIN_PW, MAX_PW);
-    // lcd.setCursor(0, 0);
-    // lcd.print("M PW: " + String((float)pulsewidth));
+    LC::shared_instance().getLC().setCursor(0, 0);
+    LC::shared_instance().getLC().print("M PW: " + String((float)pulsewidth));
     break;
   case PWMController::STEERING_NORMAL:
   case PWMController::STEERING_REVERSE:
     pulsewidth = map(percent, -1, 1, MIN_PW, MAX_PW);
-    // lcd.setCursor(0, 1);
-    // lcd.print("S PW: " + String((float)pulsewidth));
+    LC::shared_instance().getLC().setCursor(0, 1);
+    LC::shared_instance().getLC().print("S PW: " + String((float)pulsewidth));
 
     break;
   }
