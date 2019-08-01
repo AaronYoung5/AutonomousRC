@@ -33,13 +33,22 @@ void controlCallback(const common_msgs::Control::ConstPtr &msg) {
             << (*(struct ControlMessage *)(buffer + 4)).throttle << std::endl;
   std::cout << "Steering Sent :: "
             << (*(struct ControlMessage *)(buffer + 4)).steering << std::endl;
+
+  // while (!ser.available()) {
+  // }
+  // std::cout << "Data Received :: ";
+  // while (ser.available()) {
+    std::string data = ser.read(sizeof(uint8_t));
+    // std::cout << data;
+  // }
+  // std::cout << std::endl;
 }
 
 int main(int argc, char **argv) {
   ros::init(argc, argv, "arduino_interface");
   ros::NodeHandle n;
 
-  ros::Subscriber write_sub = n.subscribe("control", 10, controlCallback);
+  ros::Subscriber write_sub = n.subscribe("control", 1, controlCallback);
 
   try {
     ser.setPort("/dev/ttyACM0");

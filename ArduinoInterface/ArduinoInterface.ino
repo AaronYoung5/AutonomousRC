@@ -1,4 +1,5 @@
 #include "Common.h"
+#include "LCD.h"
 #include "PWMController.h"
 #include "SerialHandler.h"
 
@@ -17,7 +18,7 @@ PWMController *steeringController;
 
 void setup() {
   Serial.begin(BAUD_RATE);
-  
+
   serialHandler = new SerialHandler();
   motorController = new PWMController(PWMController::MOTOR_REVERSE, MOTOR_PIN);
   steeringController =
@@ -33,8 +34,9 @@ void setup() {
   delay(1000);
 }
 void loop() {
-  if (serialHandler->shouldRun())
+  if (serialHandler->shouldRun()) {
     serialHandler->run();
+  }
 
   if (motorController->shouldRun()) {
     motorController->SetPercent(serialHandler->GetMessage().throttle);
