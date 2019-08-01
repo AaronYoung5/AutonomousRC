@@ -24,7 +24,7 @@ struct ControlMessage {
 void controlCallback(const common_msgs::Control::ConstPtr &msg) {
   message = ControlMessage{msg->throttle, msg->steering};
   int size = sizeof(message);
-  uint8_t *buffer;
+  uint8_t buffer[size + 4];
   memcpy(buffer + 4, &message, size);
   buffer[0] = size;
   ser.flush();

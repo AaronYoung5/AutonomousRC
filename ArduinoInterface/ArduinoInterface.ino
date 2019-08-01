@@ -8,7 +8,7 @@ using namespace Common;
 const int STEERING_PIN = 9; // Pin on arduino
 
 // --- Motor --- //
-const int MOTOR_PIN = 6;
+const int MOTOR_PIN = 6; // Pin on arduino
 
 // Custom objects
 SerialHandler *serialHandler;
@@ -19,9 +19,9 @@ void setup() {
   Serial.begin(BAUD_RATE);
   
   serialHandler = new SerialHandler();
-  motorController = new PWMController(PWMController::MOTOR_NORMAL, MOTOR_PIN);
+  motorController = new PWMController(PWMController::MOTOR_REVERSE, MOTOR_PIN);
   steeringController =
-      new PWMController(PWMController::STEERING_NORMAL, STEERING_PIN);
+      new PWMController(PWMController::STEERING_REVERSE, STEERING_PIN);
 
   // Set servos to neutral value
   motorController->SetPosition(PWMController::NEUTRAL);

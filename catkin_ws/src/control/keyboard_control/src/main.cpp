@@ -69,7 +69,8 @@ void Teleop::keyLoop() {
       dirty = true;
       break;
     case KEYCODE_D:
-      throttle_ -= .025;
+      // throttle_ -= .025;
+      throttle_ -= .01;
       // ROS_INFO("DOWN");
       dirty = true;
       break;

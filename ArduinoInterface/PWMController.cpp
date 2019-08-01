@@ -53,14 +53,25 @@ float PWMController::map(float x, float in_min, float in_max, float out_min,
 void PWMController::SetPercent(float percent) {
   switch (type) {
   case PWMController::MOTOR_NORMAL:
+   pulsewidth = map(percent, -1, 1, MIN_PW, MAX_PW);
+    // pulsewidth < NEUTRAL_PW ? pulsewidth = NEUTRAL_PW : pulsewidth = pulsewidth;
+    LC::shared_instance().getLC().setCursor(0, 0);
+    LC::shared_instance().getLC().print("M PW: " + String((float)pulsewidth));
+    break;
   case PWMController::MOTOR_REVERSE:
-    pulsewidth = map(percent, -1, 1, MIN_PW, MAX_PW);
+    pulsewidth = map(percent, 1, -1, MIN_PW, MAX_PW);
+    // pulsewidth < NEUTRAL_PW ? pulsewidth = NEUTRAL_PW : pulsewidth = pulsewidth;
     LC::shared_instance().getLC().setCursor(0, 0);
     LC::shared_instance().getLC().print("M PW: " + String((float)pulsewidth));
     break;
   case PWMController::STEERING_NORMAL:
-  case PWMController::STEERING_REVERSE:
     pulsewidth = map(percent, -1, 1, MIN_PW, MAX_PW);
+    LC::shared_instance().getLC().setCursor(0, 1);
+    LC::shared_instance().getLC().print("S PW: " + String((float)pulsewidth));
+
+    break;
+  case PWMController::STEERING_REVERSE:
+    pulsewidth = map(percent, 1, -1, MIN_PW, MAX_PW);
     LC::shared_instance().getLC().setCursor(0, 1);
     LC::shared_instance().getLC().print("S PW: " + String((float)pulsewidth));
 
