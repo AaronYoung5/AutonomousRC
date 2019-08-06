@@ -1,0 +1,5 @@
+<launch>
+	<node pkg="arduino_interface" name="arduino_interface" type="arduino_interface" required="true" output="screen"/>
+
+	<node pkg="straight_line_control" name="straight_line_control" type="straight_line_control" required="true" output="screen"/>
+</launch>
