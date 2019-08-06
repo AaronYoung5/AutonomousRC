@@ -11,15 +11,16 @@ int main(int argc,char**argv){
 	float steering = -0.05;
 	bool toggleSpin = true;
 	int count = 0;
-	While(ros::ok()){
+	while(ros::ok()){
 		common_msgs::Control msg;
 		msg.throttle = 0.12;
 		if(toggleSpin)
 			steering = 0.45;
 		else
 			steering = -0.55;
-		if(count%10=0)
+		if(count%10==0)
 			toggleSpin = !toggleSpin;
+		msg.steering = steering;
 		chatter_pub.publish(msg);
 		loop_rate.sleep();
 		++count;
