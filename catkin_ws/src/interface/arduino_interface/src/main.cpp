@@ -21,8 +21,7 @@ struct ControlMessage {
   uint8_t padding = 0;
 } message;
 
-void controlCallback(const common_msgs::Control::ConstPtr &msg) {
-  message = ControlMessage{msg->throttle, msg->steering};
+void send() {
   int size = sizeof(message);
   uint8_t buffer[size + 4];
   memcpy(buffer + 4, &message, size);
@@ -34,14 +33,12 @@ void controlCallback(const common_msgs::Control::ConstPtr &msg) {
   std::cout << "Steering Sent :: "
             << (*(struct ControlMessage *)(buffer + 4)).steering << std::endl;
 
-  // while (!ser.available()) {
-  // }
-  // std::cout << "Data Received :: ";
-  // while (ser.available()) {
-    std::string data = ser.read(sizeof(uint8_t));
-    // std::cout << data;
-  // }
-  // std::cout << std::endl;
+  ser.read(sizeof(uint8_t));
+}
+
+void controlCallback(const common_msgs::Control::ConstPtr &msg) {
+  message = ControlMessage{msg->throttle, msg->steering};
+  send();
 }
 
 int main(int argc, char **argv) {
@@ -83,4 +80,6 @@ int main(int argc, char **argv) {
 
     ros::spinOnce();
   }
+  message = ControlMessage{0, 0};
+  send();
 }
