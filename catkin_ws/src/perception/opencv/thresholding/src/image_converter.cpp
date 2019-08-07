@@ -62,14 +62,24 @@ void ImageConverter::imageCallback(const sensor_msgs::Image::ConstPtr &msg) {
   // Red has H value around 0
   cv::inRange(image_hsv, cv::Scalar(0, 200, 50), cv::Scalar(7, 255, 255),
               red_mask);
+  // cv::adaptiveThreshold(cv::Mat1b(cv_ptr->image), red_mask, 255,
+  // cv::ADAPTIVE_THRESH_MEAN_C, cv::THRESH_BINARY, 5, 0);
+
+  cv::Mat element = cv::getStructuringElement(cv::MORPH_RECT, cv::Size(10, 10),
+                                              cv::Point(-1, -1));
+  cv::erode(green_mask, green_mask, element);
+  cv::erode(red_mask, red_mask, element);
+  element = cv::getStructuringElement(cv::MORPH_RECT, cv::Size(20, 20),
+                                              cv::Point(-1, -1));
+  cv::dilate(green_mask, green_mask, element);
+  cv::dilate(red_mask, red_mask, element);
 
   cv::Mat1b mask = green_mask | red_mask;
 
   if (should_imshow)
     cv::imshow(THRESH_WINDOW, mask);
 
-  cv::Mat1b green_canny_output;
-  cv::Mat1b red_canny_output;
+  cv::Mat1b green_canny_output, red_canny_output;
 
   // Find green cones
   cv::Canny(green_mask, green_canny_output, 1, 1);
@@ -99,10 +109,15 @@ void ImageConverter::imageCallback(const sensor_msgs::Image::ConstPtr &msg) {
   for (size_t i = 0; i < red_contours.size(); i++) {
     cv::approxPolyDP(red_contours[i], red_contours_poly[i], 3, true);
     cv::Rect temp = cv::boundingRect(red_contours_poly[i]);
-    if (temp.area() > 100) {
-      red_cones.push_back(temp);
-    }
+    // if (temp.area() > 100) {
+    red_cones.push_back(temp);
+    // }
   }
+
+  cv::Mat1b canny_output = green_canny_output | red_canny_output;
+
+  if (should_imshow)
+    cv::imshow(CANNY_WINDOW, canny_output);
 
   cv::Scalar yellow = cv::Scalar(0, 255, 255);
   cv::Scalar blue = cv::Scalar(255, 0, 0);

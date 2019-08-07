@@ -19,5 +19,5 @@
     </include>
   </group>
 
-  <node pkg="opencv_thresholding" type="opencv_cone_detection" name="opencv_thresholding" output="screen"/>
+  <node pkg="opencv_thresholding" type="opencv_thresholding" name="opencv_thresholding" output="screen" required="true"/>
 </launch>

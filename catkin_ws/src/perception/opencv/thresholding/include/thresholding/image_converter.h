@@ -10,6 +10,7 @@
 
 static const std::string ORIGINAL_WINDOW = "Original Image";
 static const std::string THRESH_WINDOW = "Thresholded Image";
+static const std::string CANNY_WINDOW = "Canny Image";
 static const std::string OBJ_WINDOW = "Objects Detected Image";
 
 typedef cv::Point3_<cv::Point> Triangle;
@@ -30,6 +31,7 @@ public:
   ~ImageConverter() {
     cv::destroyWindow(ORIGINAL_WINDOW);
     cv::destroyWindow(THRESH_WINDOW);
+    cv::destroyWindow(CANNY_WINDOW);
     cv::destroyWindow(OBJ_WINDOW);
   }
 
@@ -39,7 +41,7 @@ private:
   void imageCallback(const sensor_msgs::Image::ConstPtr &msg);
 
   float areaTriangle(Triangle tri);
-  
+
   void clamp(common_msgs::Control &control);
 
   bool isInside(cv::Point pt, Triangle point);
