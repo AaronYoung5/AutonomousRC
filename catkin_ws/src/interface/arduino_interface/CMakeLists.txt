@@ -19,6 +19,6 @@ include_directories(
   ${catkin_INCLUDE_DIRS}
 )
 
-add_executable(arduino_interface src/main.cpp)
+add_executable(arduino_interface src/main.cpp src/serial_handler.cpp)
 target_link_libraries(arduino_interface ${catkin_LIBRARIES})
 add_dependencies(arduino_interface ${catkin_EXPORTED_TARGETS})

@@ -24,19 +24,25 @@ void setup() {
   steeringController =
       new PWMController(PWMController::STEERING_REVERSE, STEERING_PIN);
 
-  // Set servos to neutral value
-  motorController->SetPosition(PWMController::NEUTRAL);
-  steeringController->SetPosition(PWMController::NEUTRAL);
+  // delay(1000);
 
-  Serial.println("Finished Setup");
-  delay(1000);
-  Serial.println("Starting Loop");
-  delay(1000);
+  serialHandler->establishConnection();
+
+  // delay(1000);
+
+  // Set servos to neutral value
+  // motorController->SetPosition(PWMController::NEUTRAL);
+  // steeringController->SetPosition(PWMController::NEUTRAL);
+
+  // Serial.println("Finished Setup");
+  // delay(1000);
+  // Serial.println("Starting Loop");
+  // delay(1000);
 }
 void loop() {
-  if (serialHandler->shouldRun()) {
+  // if (serialHandler->shouldRun()) {
     serialHandler->run();
-  }
+  // }
 
   if (motorController->shouldRun()) {
     motorController->SetPercent(serialHandler->GetMessage().throttle);
