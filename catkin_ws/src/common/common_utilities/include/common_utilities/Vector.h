@@ -3,9 +3,36 @@
 #include <math.h>
 
 namespace common_utilities {
-template <class T = float> struct Vector2D {
-  T x;
-  T y;
+template <class T = float> class Vec2 {
+private:
+  T x_;
+  T y_;
+
+public:
+  Vec2(T x, T y) : x_(x), y_(y) {}
+
+  T x() { return x_; }
+  T y() { return y_; }
+
+  void setX(T x) { x_ = x; }
+  void setY(T y) { y_ = y; }
+
+  Vec2<T> getUnit() {
+    return Vec2<T>(x_ / length(), y_ / length());
+  }
+
+  T length() { return sqrt(pow(x_, 2) + pow(y_, 2)); }
+  T lengthSquared() { return pow(x_, 2) + pow(y_, 2); }
+
+  Vec2<T> operator*(T n) { return Vec2<T>(x_ * n, y_ * n); }
+
+  Vec2<T> operator-(Vec2<T> vec) {
+    return Vec2<T>(x_ - vec.x(), y_ - vec.y());
+  }
+
+  Vec2<T> operator+(Vec2<T> vec) {
+    return Vec2<T>(x_ + vec.x(), y_ + vec.y());
+  }
 };
 
 template <class T = float> class Vector3D {

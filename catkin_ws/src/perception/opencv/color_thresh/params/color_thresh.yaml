@@ -1,3 +1,0 @@
-/perception/image_topic/: "/perception/chrono_image/"
-/perception/flip: true
-/perception/image_display: true

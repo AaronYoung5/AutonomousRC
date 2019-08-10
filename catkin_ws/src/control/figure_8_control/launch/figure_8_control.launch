@@ -1,7 +1,0 @@
-<launch>
-        <node pkg="arduino_interface" name="arduino_interface" type="arduino_interface" required="true" output="screen"/>
-
-        <node pkg="figure_8_control" name="figure_8_control" type="figure_8_control" required="true" output="screen"/>
-</launch>
-
-

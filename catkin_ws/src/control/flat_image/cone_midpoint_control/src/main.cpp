@@ -1,12 +1,12 @@
 // ROS include
 #include "ros/ros.h"
-#include "thresholding/thresholder.h"
+#include "cone_midpoint_control/controller.h"
 
 int main(int argc, char **argv) {
-  ros::init(argc, argv, "thresholding");
+  ros::init(argc, argv, "cone_midpoint");
   ros::NodeHandle n("~");
 
-  Thresholder converter(n);
+  Controller controller(n);
 
   ros::spin();
 }

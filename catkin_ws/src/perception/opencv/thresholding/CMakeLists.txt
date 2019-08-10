@@ -1,9 +1,9 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(opencv_thresholding)
+project(thresholding)
 
 find_package(catkin REQUIRED COMPONENTS
   roscpp
-  common_msgs
+  opencv_msgs
   cv_bridge
   image_transport
 )
@@ -19,7 +19,6 @@ catkin_package(
 
 )
 
-add_executable(opencv_thresholding src/main.cpp src/image_converter.cpp)
-target_link_libraries(opencv_thresholding ${catkin_LIBRARIES} ${OpenCV_LIBRARIES})
-
-add_dependencies(opencv_thresholding ${catkin_EXPORTED_TARGETS})
+add_executable(thresholding src/main.cpp src/thresholder.cpp)
+target_link_libraries(thresholding ${catkin_LIBRARIES} ${OpenCV_LIBRARIES})
+add_dependencies(thresholding ${catkin_EXPORTED_TARGETS})
