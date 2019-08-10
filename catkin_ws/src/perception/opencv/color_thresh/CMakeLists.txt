@@ -1,9 +1,9 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(opencv_color_thresh)
+project(color_thresh)
 
 find_package(catkin REQUIRED COMPONENTS
   roscpp
-  common_msgs
+  opencv_msgs
   cv_bridge
   image_transport
 )
@@ -19,7 +19,6 @@ catkin_package(
 
 )
 
-# add_executable(opencv_color_thresh src/main.cpp src/image_converter.cpp)
-# target_link_libraries(opencv_color_thresh ${catkin_LIBRARIES} ${OpenCV_LIBRARIES})
-# 
-# add_dependencies(opencv_color_thresh ${catkin_EXPORTED_TARGETS})
+add_executable(color_thresh src/main.cpp src/color_thresholder.cpp)
+target_link_libraries(color_thresh ${catkin_LIBRARIES} ${OpenCV_LIBRARIES})
+add_dependencies(color_thresh ${catkin_EXPORTED_TARGETS})

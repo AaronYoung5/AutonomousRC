@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <package format="2">
-  <name>color_thresh</name>
+  <name>midpoint_path2</name>
   <version>0.0.0</version>
   <description>
-    color_thresh package
+    midpoint_path2 package
   </description>
 
   <license>TODO</license>
   <author>TODO</author>
   <maintainer email="TODO@TODO.com">TODO</maintainer>
 
-  <depend>opencv_msgs</depend>
-  <depend>image_transport</depend>
-  <depend>cv_bridge</depend>
+  <!-- <depend>opencv_msgs</depend> -->
+  <!-- <depend>image_transport</depend> -->
+  <!-- <depend>cv_bridge</depend> -->
 
   <buildtool_depend>catkin</buildtool_depend>
 </package>

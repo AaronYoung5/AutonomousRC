@@ -1,12 +1,12 @@
 // ROS include
 #include "ros/ros.h"
-#include "color_thresh/image_converter.h"
+#include "color_thresh/color_thresholder.h"
 
 int main(int argc, char **argv) {
   ros::init(argc, argv, "opencv_color_thresh");
-  ros::NodeHandle n;
+  ros::NodeHandle n("~");
 
-  ImageConverter converter(n);
+  ColorThresholder converter(n);
 
   ros::spin();
 }

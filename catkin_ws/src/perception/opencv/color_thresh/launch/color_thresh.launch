@@ -1,0 +1,21 @@
+<launch>
+  <!-- Image topic to subscribe to -->
+  <arg name="image_topic" value="/perception/opencv/image_data_raw"/>
+  <!-- Use simulated sensors -->
+  <arg name="simulating" value="false"/>
+  <!-- Display opencv window -->
+  <arg name="display" value="true"/>
+  <include file="$(find image_detection)/launch/image_detection.launch">
+    <arg name="simulating" value="$(arg simulating)"/>
+    <arg name="image_topic" value="$(arg image_topic)"/>
+  </include>
+  <group ns="perception">
+    <group ns="opencv">
+      <node pkg="color_thresh" type="color_thresh" name="color_thresh" output="screen" required="true">
+        <param name="image_topic" value="$(arg image_topic)"/>
+        <param name="simulating" type="bool" value="$(arg simulating)"/>
+        <param name="display" type="bool" value="$(arg display)"/>
+      </node>
+    </group>
+  </group>
+</launch>
