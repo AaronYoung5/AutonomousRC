@@ -9,14 +9,14 @@ Controller::Controller(ros::NodeHandle &n) {
   sub_ = n.subscribe(cone_topic, 1, &Controller::imageCallback, this);
 }
 
-void Controller::imageCallback(const opencv_msgs::ConeImageMap::ConstPtr &msg) {
+void Controller::imageCallback(const perception_msgs::ConeImageMap::ConstPtr &msg) {
   common_msgs::Control control;
 
   int height = msg->height;
   int width = msg->width;
 
-  std::vector<opencv_msgs::Cone> green_cones = msg->green_cones;
-  std::vector<opencv_msgs::Cone> red_cones = msg->red_cones;
+  std::vector<perception_msgs::Cone> green_cones = msg->green_cones;
+  std::vector<perception_msgs::Cone> red_cones = msg->red_cones;
 
   float dist_off_screen = 1000;
   float dist_from_top = height / 2.0f;
@@ -31,7 +31,7 @@ void Controller::imageCallback(const opencv_msgs::ConeImageMap::ConstPtr &msg) {
     control.steering = 0;
     control.braking = 1;
   } else {
-    for (opencv_msgs::Cone cone : red_cones) {
+    for (perception_msgs::Cone cone : red_cones) {
       Vec2<> avg((cone.tl.x + cone.br.x) / 2.0f,
                  (cone.tl.y + cone.br.y) / 2.0f);
       if (Triangle<>::IsInside(avg, tri)) {
@@ -40,7 +40,7 @@ void Controller::imageCallback(const opencv_msgs::ConeImageMap::ConstPtr &msg) {
                                 : avg.x() < (width * .75f) ? 0.3f : 0.15f;
       }
     }
-    for (opencv_msgs::Cone cone : green_cones) {
+    for (perception_msgs::Cone cone : green_cones) {
       Vec2<> avg((cone.tl.x + cone.br.x) / 2.0f,
                  (cone.tl.y + cone.br.y) / 2.0f);
       if (Triangle<>::IsInside(avg, tri)) {

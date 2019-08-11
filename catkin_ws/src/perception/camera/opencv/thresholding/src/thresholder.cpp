@@ -11,7 +11,7 @@ Thresholder::Thresholder(ros::NodeHandle &n) {
   image_transport::ImageTransport it(n);
   sub_ = it.subscribe(image_topic, 1, &Thresholder::imageCallback, this);
 
-  pub_ = n.advertise<opencv_msgs::ConeImageMap>(cone_topic, 1);
+  pub_ = n.advertise<perception_msgs::ConeImageMap>(cone_topic, 1);
 }
 
 void Thresholder::imageCallback(const sensor_msgs::Image::ConstPtr &msg) {
@@ -48,10 +48,10 @@ void Thresholder::imageCallback(const sensor_msgs::Image::ConstPtr &msg) {
   if (image_display_)
     cv::imshow(OBJ_WINDOW, cv_ptr->image);
 
-  opencv_msgs::ConeImageMap cone_msg;
+  perception_msgs::ConeImageMap cone_msg;
   cone_msg.green_cones =
-      CreateConeMsgArray(green_cones, opencv_msgs::Cone::GREEN);
-  cone_msg.red_cones = CreateConeMsgArray(red_cones, opencv_msgs::Cone::RED);
+      CreateConeMsgArray(green_cones, perception_msgs::Cone::GREEN);
+  cone_msg.red_cones = CreateConeMsgArray(red_cones, perception_msgs::Cone::RED);
   cone_msg.height = msg->height;
   cone_msg.width = msg->width;
 
@@ -111,13 +111,13 @@ std::vector<cv::Rect> Thresholder::Threshold(cv_bridge::CvImagePtr &cv_ptr,
   return cones;
 }
 
-std::vector<opencv_msgs::Cone>
+std::vector<perception_msgs::Cone>
 Thresholder::CreateConeMsgArray(std::vector<cv::Rect> &rects, uint8_t color) {
   // // Output 2d cone positions
-  std::vector<opencv_msgs::Cone> cones;
+  std::vector<perception_msgs::Cone> cones;
 
   for (cv::Rect rect : rects) {
-    opencv_msgs::Cone cone;
+    perception_msgs::Cone cone;
 
     cone.color = color;
 

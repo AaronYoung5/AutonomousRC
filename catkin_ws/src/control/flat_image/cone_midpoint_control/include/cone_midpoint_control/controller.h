@@ -6,7 +6,7 @@
 #include <control_utilities/Common.h>
 
 #include <common_msgs/Control.h>
-#include <opencv_msgs/ConeImageMap.h>
+#include <perception_msgs/ConeImageMap.h>
 
 using namespace common_utilities;
 using namespace control_utilities;
@@ -21,5 +21,5 @@ public:
 ~Controller() {}
 
 private:
-  void imageCallback(const opencv_msgs::ConeImageMap::ConstPtr &msg);
+  void imageCallback(const perception_msgs::ConeImageMap::ConstPtr &msg);
 };

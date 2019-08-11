@@ -30,50 +30,46 @@ int SerialHandler::initSerial() {
 }
 
 void SerialHandler::establishConnection() {
-  serial_.flush();
   while (serial_.available() <= 0) {
     ros::Duration(1).sleep();
   }
   serial_.readline();
-
   serial_.flush();
-  ros::Duration(3).sleep();
   serial_.write("1");
   std::cout << "Connection Established" << std::endl;
-
-  ros::Duration(3).sleep();
-  serial_.flush();
   sendControls();
 }
 
 void SerialHandler::sendControls() {
-  int size = sizeof(message_);
-  uint8_t buffer[size + 4];
-  memcpy(buffer + 4, &message_, size);
+  uint8_t size = sizeof(message_);
+  uint8_t buffer[size + sizeof(uint8_t)];
+  memcpy(buffer + sizeof(uint8_t), &message_, size);
   buffer[0] = size;
   serial_.flush();
   serial_.write(buffer, size);
-  std::cout << "Motor Sent :: "
-            << (*(struct ControlMessage *)(buffer + 4)).throttle << std::endl;
-  std::cout << "Steering Sent :: "
-            << (*(struct ControlMessage *)(buffer + 4)).steering << std::endl;
+  // std::cout << "Motor Sent :: "
+  // << (int)(*(struct ControlMessage *)(buffer + sizeof(uint8_t))).throttle <<
+  // std::endl;
+  // std::cout << "Steering Sent :: "
+  // << (int)(*(struct ControlMessage *)(buffer + sizeof(uint8_t))).steering <<
+  // std::endl;
 
-            serial_.readline();
+  serial_.readline();
 }
 
 void SerialHandler::controlsCallback(
     const common_msgs::Control::ConstPtr &msg) {
-  message_ = ControlMessage{msg->throttle, msg->steering};
+  message_ = ControlMessage{(int8_t)(msg->throttle * 100),
+                            (int8_t)(msg->steering * 100)};
   sendControls();
 }
 
 int SerialHandler::spin() {
   if (initSerial() == -1)
     return -1;
-  ros::Duration(5).sleep();
+  ros::Duration(1).sleep();
   establishConnection();
 
-  serial_.flush();
   while (ros::ok()) {
     if (serial_.available()) {
       // serial_.flush();

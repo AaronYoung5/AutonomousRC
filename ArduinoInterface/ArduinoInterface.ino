@@ -1,56 +1,35 @@
-#include "Common.h"
-#include "LCD.h"
 #include "PWMController.h"
 #include "SerialHandler.h"
 
-using namespace Common;
+// Constants
+const long BAUD_RATE = 115200;
 
 // --- Steering --- //
-const int STEERING_PIN = 9; // Pin on arduino
+const uint8_t STEERING_PIN = 9; // Pin on arduino
 
 // --- Motor --- //
-const int MOTOR_PIN = 6; // Pin on arduino
+const uint8_t MOTOR_PIN = 6; // Pin on arduino
 
 // Custom objects
-SerialHandler *serialHandler;
-PWMController *motorController;
-PWMController *steeringController;
+SerialHandler serialHandler;
+PWMController motorController(PWMController::MOTOR_REVERSE, MOTOR_PIN);
+PWMController steeringController(PWMController::STEERING_REVERSE, STEERING_PIN);
 
 void setup() {
   Serial.begin(BAUD_RATE);
+  Serial.setTimeout(50);
 
-  serialHandler = new SerialHandler();
-  motorController = new PWMController(PWMController::MOTOR_REVERSE, MOTOR_PIN);
-  steeringController =
-      new PWMController(PWMController::STEERING_REVERSE, STEERING_PIN);
-
-  // delay(1000);
-
-  serialHandler->establishConnection();
-
-  // delay(1000);
-
-  // Set servos to neutral value
-  // motorController->SetPosition(PWMController::NEUTRAL);
-  // steeringController->SetPosition(PWMController::NEUTRAL);
-
-  // Serial.println("Finished Setup");
-  // delay(1000);
-  // Serial.println("Starting Loop");
-  // delay(1000);
+  serialHandler.establishConnection();
 }
 void loop() {
-  // if (serialHandler->shouldRun()) {
-    serialHandler->run();
-  // }
+  serialHandler.Advance();
 
-  if (motorController->shouldRun()) {
-    motorController->SetPercent(serialHandler->GetMessage().throttle);
-    motorController->run();
-  }
+  motorController.setTarget(serialHandler.GetThrottle());
+  motorController.Advance();
 
-  if (steeringController->shouldRun()) {
-    steeringController->SetPercent(serialHandler->GetMessage().steering);
-    steeringController->run();
-  }
+  steeringController.setTarget(serialHandler.GetSteering());
+  steeringController.Advance();
+
+  // Debugging
+  // Serial.println(motorController.GetCurrent())
 }

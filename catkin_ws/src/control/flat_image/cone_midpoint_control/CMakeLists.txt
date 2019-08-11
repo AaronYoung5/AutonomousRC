@@ -4,7 +4,7 @@ project(cone_midpoint_control)
 find_package(catkin REQUIRED COMPONENTS
   roscpp
   common_msgs
-  opencv_msgs
+  perception_msgs
   control_utilities
   common_utilities
 )

@@ -9,13 +9,13 @@ Controller::Controller(ros::NodeHandle &n) {
   sub_ = n.subscribe(cone_topic, 1, &Controller::imageCallback, this);
 }
 
-void Controller::imageCallback(const opencv_msgs::ConeImageMap::ConstPtr &msg) {
+void Controller::imageCallback(const perception_msgs::ConeImageMap::ConstPtr &msg) {
   common_msgs::Control control;
   int height = msg->height;
   int width = msg->width;
 
-  std::vector<opencv_msgs::Cone> green_cones = msg->green_cones;
-  std::vector<opencv_msgs::Cone> red_cones = msg->red_cones;
+  std::vector<perception_msgs::Cone> green_cones = msg->green_cones;
+  std::vector<perception_msgs::Cone> red_cones = msg->red_cones;
 
   if (green_cones.size() == 0 && red_cones.size() == 0) {
     control.throttle = 0;

@@ -18,8 +18,8 @@ private:
   enum ControlType : uint8_t { STEERING, THROTTLE };
 
   struct ControlMessage {
-    float throttle = 0;
-    float steering = 0;
+    int8_t throttle = 0;
+    int8_t steering = 0;
     uint8_t padding = 0;
   } message_;
 

@@ -6,7 +6,7 @@ find_package(catkin REQUIRED COMPONENTS
   common_msgs
   common_utilities
   control_utilities
-  opencv_msgs
+  perception_msgs
 )
 
 include_directories(

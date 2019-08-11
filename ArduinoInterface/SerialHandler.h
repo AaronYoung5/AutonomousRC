@@ -1,36 +1,41 @@
 #pragma once
 
-#include "Common.h"
-#include "LCD.h"
-#include <Thread.h>
+#include <HardwareSerial.h>
 
-class SerialHandler : public Thread {
-public:
+class SerialHandler {
+private:
   // Public class variables
-  enum AckType : uint8_t { OK, NOT_OK };
-  enum ControlMessageType { STEERING, THROTTLE };
-
   struct ControlMessage {
-    float throttle;
-    float steering;
+    int8_t throttle = 0;
+    int8_t steering = 0;
     uint8_t padding = 0;
   } message_;
 
-private:
-  // Private class variables
-
 public:
   // Public methods
-  SerialHandler();
+  SerialHandler() {}
 
-  void run();
-
-  void establishConnection();
-
-  struct ControlMessage GetMessage() {
-    return message_;
+  void Advance() {
+    while (Serial.available() > 0) {
+      // read the incoming byte:
+      uint8_t sizeBuffer[sizeof(uint8_t)];
+      Serial.readBytes(sizeBuffer, sizeof(uint8_t));
+      uint8_t size = ((uint8_t *)sizeBuffer)[0];
+      uint8_t messageBuffer[size];
+      Serial.readBytes(messageBuffer, size);
+      message_ = *((struct ControlMessage *)messageBuffer);
+      Serial.println();
+    }
   }
 
-private:
-  // Private methods
+  void establishConnection() {
+    while (Serial.available() <= 0) {
+      Serial.println();
+      delay(300);
+    }
+  }
+
+  int8_t GetThrottle() { return message_.throttle; }
+
+  int8_t GetSteering() { return message_.steering; }
 };

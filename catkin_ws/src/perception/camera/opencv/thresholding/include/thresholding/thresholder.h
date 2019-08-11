@@ -6,7 +6,7 @@
 #include <opencv2/imgproc/imgproc.hpp>
 #include <sensor_msgs/image_encodings.h>
 
-#include "opencv_msgs/ConeImageMap.h"
+#include "perception_msgs/ConeImageMap.h"
 
 static const std::string ORIGINAL_WINDOW = "Original Image";
 static const std::string THRESH_WINDOW = "Thresholded Image";
@@ -31,7 +31,7 @@ private:
   std::vector<cv::Rect> Threshold(cv_bridge::CvImagePtr &cv_ptr,
                                   cv::Scalar lower_hsv, cv::Scalar upper_hsv);
 
-  std::vector<opencv_msgs::Cone>
+  std::vector<perception_msgs::Cone>
   CreateConeMsgArray(std::vector<cv::Rect> &rects, uint8_t color);
   cv::Scalar ScalarHSV2BGR(cv::Scalar hsv_scalar);
 };

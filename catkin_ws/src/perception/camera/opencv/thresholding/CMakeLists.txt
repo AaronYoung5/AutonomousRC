@@ -3,7 +3,7 @@ project(thresholding)
 
 find_package(catkin REQUIRED COMPONENTS
   roscpp
-  opencv_msgs
+  perception_msgs
   cv_bridge
   image_transport
 )
