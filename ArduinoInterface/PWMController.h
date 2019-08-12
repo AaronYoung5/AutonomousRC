@@ -2,11 +2,9 @@
 
 #include <Servo.h>
 
-// Update rate for the PWM
-const uint8_t UPDATE_RATE = 50; // FPS = 50
-
-// Time step for internal dynamics
-// const uint8_t STEP_SIZE = 1e-3; // ms
+// PWM increment for each input
+// Response times for the steering and throttle inputs
+const uint8_t DELTA_PW = 1;
 
 // Average PW for steering in normal and reverse settings for each position
 const int STEERING_NORMAL_PW_NEUTRAL = 1541;
@@ -24,10 +22,6 @@ const int MOTOR_REVERSE_PW_NEUTRAL = 1500;
 const int MOTOR_REVERSE_PW_THROTTLE = 1020;
 const int MOTOR_REVERSE_PW_BRAKE = 1980;
 
-// Response times for the steering and throttle inputs
-// const uint8_t STEERING_TIME = 1; // time to go from 0 to +1 (or from 0 to -1)
-// const uint8_t THROTTLE_TIME = 1; // time to go from 0 to +1
-
 class PWMController : public Servo {
 public:
   enum CONTROLLER_TYPE : uint8_t {
@@ -43,14 +37,17 @@ private:
   int NEUTRAL_PW;
   int TRIM_PW;
 
-  const PWMController::CONTROLLER_TYPE type;
+  PWMController::CONTROLLER_TYPE type;
 
-  int current; // Current PWM
-  int target;  // Target PWM
+  float current; // Current PWM
+  int target;    // Target PWM
 
 public:
-  PWMController(CONTROLLER_TYPE controller_type, uint8_t pin)
-      : Servo(), type(type), TRIM_PW(0) {
+  PWMController() : Servo() {}
+
+  void Initialize(CONTROLLER_TYPE controller_type, uint8_t pin) {
+    this->type = type;
+    TRIM_PW = 0;
     attach(pin);
 
     switch (type) {
@@ -83,7 +80,6 @@ public:
   }
 
   void setTarget(int8_t percent) {
-    uint8_t delta = UPDATE_RATE; // PWM increment for each input
     int temp;
     switch (type) {
     case PWMController::MOTOR_NORMAL:
@@ -99,14 +95,18 @@ public:
       temp = map(percent, (int8_t)100, (int8_t)-100, MIN_PW, MAX_PW);
       break;
     }
-    target += abs(temp - target) < delta ? 0 : temp > target ? delta : -delta;
+    target += abs(temp - target) < DELTA_PW
+                  ? 0
+                  : temp > target ? DELTA_PW : -DELTA_PW;
   }
 
   void Advance() {
     // Integrate dynamics, taking as many steps as required to reach the value
     // 'step'
     uint8_t gain = 4; // Gain for internal dynamics
-    uint8_t step = 2; // ms
+
+    // Time step for internal dynamics
+    uint8_t step = 1; // ms
 
     int deriv = gain * (target - current);
 
