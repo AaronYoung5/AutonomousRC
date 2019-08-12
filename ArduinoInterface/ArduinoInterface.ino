@@ -24,12 +24,14 @@ void setup() {
 void loop() {
   serialHandler.Advance();
 
-  motorController.setTarget(serialHandler.GetThrottle());
-  motorController.Advance();
+  // motorController.setTarget(serialHandler.GetThrottle());
+  // motorController.Advance();
 
   steeringController.setTarget(serialHandler.GetSteering());
   steeringController.Advance();
 
   // Debugging
-  // Serial.println(motorController.GetCurrent())
+  // Serial.println((int)serialHandler.GetSteering());
+  // Serial.println(steeringController.GetCurrent());
+  // delay(25);
 }

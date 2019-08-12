@@ -87,16 +87,16 @@ public:
     int temp;
     switch (type) {
     case PWMController::MOTOR_NORMAL:
-      temp = map(percent, -100, 100, MIN_PW, MAX_PW);
+      temp = map(percent, (int8_t)-100, (int8_t)100, MIN_PW, MAX_PW);
       break;
     case PWMController::MOTOR_REVERSE:
-      temp = map(percent, 100, -100, MIN_PW, MAX_PW);
+      temp = map(percent, (int8_t)100, (int8_t)-100, MIN_PW, MAX_PW);
       break;
     case PWMController::STEERING_NORMAL:
-      temp = map(percent, -100, 100, MIN_PW, MAX_PW);
+      temp = map(percent, (int8_t)-100, (int8_t)100, MIN_PW, MAX_PW);
       break;
     case PWMController::STEERING_REVERSE:
-      temp = map(percent, 100, -100, MIN_PW, MAX_PW);
+      temp = map(percent, (int8_t)100, (int8_t)-100, MIN_PW, MAX_PW);
       break;
     }
     target += abs(temp - target) < delta ? 0 : temp > target ? delta : -delta;
@@ -113,18 +113,11 @@ public:
     current += (step / 1000.0f) * deriv;
 
     // Clamp value
-    clamp(current);
+    current = current >= MAX_PW ? MAX_PW : current <= MIN_PW ? MIN_PW : current;
 
     // Write value to servo
     writeMicroseconds(current);
   }
 
-private:
-  void clamp(int value) {
-    return value >= MAX_PW ? MAX_PW : value <= MIN_PW ? MIN_PW : value;
-  }
-
-  int map(uint8_t x, uint8_t in_min, uint8_t in_max, int out_min, int out_max) {
-    return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
-  }
+  int GetCurrent() { return (int)target; }
 };

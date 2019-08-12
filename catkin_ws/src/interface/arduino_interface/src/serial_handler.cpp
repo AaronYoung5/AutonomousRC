@@ -67,7 +67,7 @@ void SerialHandler::controlsCallback(
 int SerialHandler::spin() {
   if (initSerial() == -1)
     return -1;
-  ros::Duration(1).sleep();
+  ros::Duration(2).sleep();
   establishConnection();
 
   while (ros::ok()) {

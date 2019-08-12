@@ -6,8 +6,8 @@ class SerialHandler {
 private:
   // Public class variables
   struct ControlMessage {
-    int8_t throttle = 0;
-    int8_t steering = 0;
+    int8_t throttle;
+    int8_t steering;
     uint8_t padding = 0;
   } message_;
 
