@@ -2,9 +2,12 @@
 
 #include <Servo.h>
 
+void (*resetFunc)(void) = 0;
 // PWM increment for each input
 // Response times for the steering and throttle inputs
 const uint8_t DELTA_PW = 1;
+// Max change in PWM before arduino is shut off
+const uint8_t MAX_DELTA_PW = 10;
 
 // Average PW for steering in normal and reverse settings for each position
 const int STEERING_NORMAL_PW_NEUTRAL = 1541;
@@ -41,6 +44,7 @@ private:
 
   float current; // Current PWM
   int target;    // Target PWM
+  int last;      // Last PWM sent
 
 public:
   PWMController() : Servo() {}
@@ -75,11 +79,12 @@ public:
 
     target = NEUTRAL_PW;
     current = NEUTRAL_PW;
+    last = NEUTRAL_PW;
 
     writeMicroseconds(NEUTRAL_PW);
   }
 
-  void setTarget(int8_t percent) {
+  void Advance(int8_t percent) {
     int temp;
     switch (type) {
     case PWMController::MOTOR_NORMAL:
@@ -98,9 +103,7 @@ public:
     target += abs(temp - target) < DELTA_PW
                   ? 0
                   : temp > target ? DELTA_PW : -DELTA_PW;
-  }
 
-  void Advance() {
     // Integrate dynamics, taking as many steps as required to reach the value
     // 'step'
     uint8_t gain = 4; // Gain for internal dynamics
@@ -115,8 +118,12 @@ public:
     // Clamp value
     current = current >= MAX_PW ? MAX_PW : current <= MIN_PW ? MIN_PW : current;
 
+    if (abs(last - current) > MAX_DELTA_PW)
+      resetFunc();
+
     // Write value to servo
     writeMicroseconds(current);
+    last = current;
   }
 
   int GetCurrent() { return (int)target; }
