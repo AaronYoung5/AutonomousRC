@@ -6,6 +6,7 @@
   <arg name="cone_topic" default="/perception/cone_image_map"/>
   <!-- Use simulated sensors -->
   <arg name="simulating" default="true"/>
+  <include file="$(find arduino_interface)/launch/arduino_interface.launch"/>
   <!-- Include thresholding launch file -->
   <include file="$(find thresholding)/launch/thresholding.launch">
     <arg name="simulating" value="$(arg simulating)"/>

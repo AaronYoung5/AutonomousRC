@@ -6,7 +6,7 @@
   <!-- Use simulated sensors -->
   <arg name="simulating" default="false"/>
   <!-- Display opencv window -->
-  <arg name="display" default="true"/>
+  <arg name="display" default="false"/>
   <!-- Include image detection launch file -->
   <include file="$(find perception_meta)/launch/camera_perception.launch">
     <arg name="simulating" value="$(arg simulating)"/>

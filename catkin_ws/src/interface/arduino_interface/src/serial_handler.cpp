@@ -47,12 +47,12 @@ void SerialHandler::sendControls() {
   buffer[0] = size;
   serial_.flush();
   serial_.write(buffer, size);
-  // std::cout << "Motor Sent :: "
-  // << (int)(*(struct ControlMessage *)(buffer + sizeof(uint8_t))).throttle <<
-  // std::endl;
-  // std::cout << "Steering Sent :: "
-  // << (int)(*(struct ControlMessage *)(buffer + sizeof(uint8_t))).steering <<
-  // std::endl;
+   std::cout << "Motor Sent :: "
+   << (int)(*(struct ControlMessage *)(buffer + sizeof(uint8_t))).throttle <<
+   std::endl;
+   std::cout << "Steering Sent :: "
+   << (int)(*(struct ControlMessage *)(buffer + sizeof(uint8_t))).steering <<
+   std::endl;
 
   serial_.readline();
 }
