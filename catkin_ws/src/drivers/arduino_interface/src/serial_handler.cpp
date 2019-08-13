@@ -59,8 +59,14 @@ void SerialHandler::sendControls() {
 
 void SerialHandler::controlsCallback(
     const common_msgs::Control::ConstPtr &msg) {
-  message_ = ControlMessage{(int8_t)(msg->throttle * 100),
-                            (int8_t)(msg->steering * 100)};
+  // Get controls
+  int8_t throttle = msg->throttle * 100;
+  int8_t steering = msg->steering * 100;
+
+  // Clamp throttle
+  throttle = throttle > (int8_t)12 ? (int8_t)12 : throttle;
+
+  message_ = ControlMessage{throttle, steering};
   sendControls();
 }
 

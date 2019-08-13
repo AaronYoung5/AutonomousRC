@@ -22,7 +22,7 @@ void Controller::imageCallback(const perception_msgs::ConeImageMap::ConstPtr &ms
     control.steering = 0;
     control.braking = 1;
   } else if (green_cones.size() == 0 || red_cones.size() == 0) {
-    control.throttle = .15;
+    control.throttle = .2;
     control.steering = green_cones.size() == 0 ? .6 : -.6;
   } else if (red_cones.size() == 1 || green_cones.size() == 1) {
     Vec2<> avgG1((green_cones[0].tl.x + green_cones[0].br.x) / 2,
@@ -47,7 +47,7 @@ void Controller::imageCallback(const perception_msgs::ConeImageMap::ConstPtr &ms
     Vec2<> destination((avgR1 + avgG1) / 2);
     Vec2<> center(width / 2, height / 2);
     control.steering = (destination.x() - center.x()) / center.x();
-    control.throttle = .15;
+    control.throttle = .2;
   } else {
     //   // finding lower left green cone
     Vec2<> avgG1((green_cones[0].tl.x + green_cones[0].br.x) / 2,
@@ -88,7 +88,7 @@ void Controller::imageCallback(const perception_msgs::ConeImageMap::ConstPtr &ms
     Vec2<> avgR2((red_cones[0].tl.x + red_cones[0].br.x) / 2,
                  (red_cones[0].tl.y + red_cones[0].br.y) / 2);
     if (avgR2.x() == avgR1.x() && avgR2.y() == avgR1.y())
-      Vec2<> avgG2((red_cones[1].tl.x + red_cones[1].br.x) / 2,
+      Vec2<> avgR2((red_cones[1].tl.x + red_cones[1].br.x) / 2,
                    (red_cones[1].tl.y + red_cones[1].br.y) / 2);
     for (size_t i = 1; i < red_cones.size(); i++) {
       Vec2<> holdR((red_cones[i].tl.x + red_cones[i].br.x) / 2,
@@ -100,21 +100,20 @@ void Controller::imageCallback(const perception_msgs::ConeImageMap::ConstPtr &ms
     }
 
     // weighted average for G1/G2 and R1/R2 x coordinates
-    avgG1.x() = avgG1.x() * 0.65 + avgG2.x() * 0.35;
-    avgR1.x() = avgR1.x() * 0.65 + avgR2.x() * 0.35;
+    int xPositionDestination =((int)( (float)avgG1.x() * 0.25 + (float)avgG2.x() * 0.75)+(int)((float)avgR1.x() * 0.25 + (float)avgR2.x() * 0.75))/2;
     // setting destination
-    Vec2<> destination((avgR1 + avgG1) / 2);
+    Vec2<> destination(xPositionDestination,0);
     // checking buffer for destination with G1&R1
-    if (destination.x() < avgG1.x() + 0.05 * width)
-      destination.x() = avgG1.x() + 0.05 * width;
-    else if (destination.x() > avgR1.x() - 0.05 * width)
-      destination.x() = avgR1.x() - 0.05 * width;
+    if (destination.x() < avgR1.x() + 0.05 * width)
+      destination.x() = avgR1.x() + 0.05 * width;
+   else if (destination.x() > avgG1.x() - 0.05 * width)
+      destination.x() = avgG1.x() - 0.05 * width;
     // finding center
     Vec2<> center(width / 2, height / 2);
     // setting steering
     control.steering = (destination.x() - center.x()) / (float)center.x();
 
-    control.throttle = .15;
+    control.throttle = .2;
   }
 
   clamp(control);
