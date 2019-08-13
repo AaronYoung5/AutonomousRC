@@ -34,11 +34,9 @@ void loop() {
 
   int temp_time = millis();
   if (temp_time - time >= UPDATE_RATE) {
-    motorController.setTarget(serialHandler.GetThrottle());
-    motorController.Advance();
+    motorController.Advance(serialHandler.GetThrottle());
 
-    steeringController.setTarget(serialHandler.GetSteering());
-    steeringController.Advance();
+    steeringController.Advance(serialHandler.GetSteering());
     time = temp_time;
   }
 }
