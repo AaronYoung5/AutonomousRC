@@ -5,7 +5,7 @@
 void (*resetFunc)(void) = 0;
 // PWM increment for each input
 // Response times for the steering and throttle inputs
-const uint8_t DELTA_PW = 1;
+const uint8_t DELTA_PW = 10;
 // Max change in PWM before arduino is shut off
 const uint8_t MAX_DELTA_PW = 10;
 

@@ -2,7 +2,7 @@
 
 SerialHandler::SerialHandler(ros::NodeHandle &n)
     : controls_sub_(
-          n.subscribe("control", 1, &SerialHandler::controlsCallback, this)) {}
+          n.subscribe("/control/control", 1, &SerialHandler::controlsCallback, this)) {}
 
 SerialHandler::~SerialHandler() { serial_.close(); }
 

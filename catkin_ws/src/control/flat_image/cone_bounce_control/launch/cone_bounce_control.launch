@@ -11,6 +11,9 @@
     <arg name="simulating" value="$(arg simulating)"/>
     <arg name="cone_topic" value="$(arg cone_topic)"/>
   </include>
+  <include file="$(find arduino_interface)/launch/arduino_interface.launch">
+    <arg name="simulating" value="$(arg simulating)"/>
+</include>
   <group ns="control">
     <group ns="flat_image">
       <!-- Launch thresholding node -->
