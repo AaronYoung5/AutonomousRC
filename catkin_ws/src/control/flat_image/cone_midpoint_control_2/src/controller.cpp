@@ -22,7 +22,7 @@ void Controller::imageCallback(const perception_msgs::ConeImageMap::ConstPtr &ms
     control.steering = 0;
     control.braking = 1;
   } else if (green_cones.size() == 0 || red_cones.size() == 0) {
-    control.throttle = .2;
+    control.throttle = .12;
     control.steering = green_cones.size() == 0 ? .6 : -.6;
   } else if (red_cones.size() == 1 || green_cones.size() == 1) {
     Vec2<> avgG1((green_cones[0].tl.x + green_cones[0].br.x) / 2,
@@ -47,7 +47,7 @@ void Controller::imageCallback(const perception_msgs::ConeImageMap::ConstPtr &ms
     Vec2<> destination((avgR1 + avgG1) / 2);
     Vec2<> center(width / 2, height / 2);
     control.steering = (destination.x() - center.x()) / center.x();
-    control.throttle = .2;
+    control.throttle = .12+0.08*abs(control.steering);
   } else {
     //   // finding lower left green cone
     Vec2<> avgG1((green_cones[0].tl.x + green_cones[0].br.x) / 2,
@@ -113,7 +113,7 @@ void Controller::imageCallback(const perception_msgs::ConeImageMap::ConstPtr &ms
     // setting steering
     control.steering = (destination.x() - center.x()) / (float)center.x();
 
-    control.throttle = .2;
+    control.throttle = .12+0.08*abs(control.steering);
   }
 
   clamp(control);
