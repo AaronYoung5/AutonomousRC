@@ -8,9 +8,54 @@ Controller::Controller(ros::NodeHandle &n){
 	pub_ = n.advertise<common_msgs::Control>(control_topic,1);
 	sub_ = n.subscribe (cone_topic, 1, &Controller::imageCallback, this);
 }
-//not sure this does the right thing
+//TODO: not sure this does the right thing, need it to take in mesages from cone map topic
 void Controller:: imageCallback(const perception_msgs::ConeImageMap::ConstPtr &msg){
-	
+	common_msgs::Control control;
+	//TODO: add a system that puts all the green cones and red cones into a [n][2] array with each one having [x,y]. These should only include minimum number of cones (and only the closest ones). if there are 3 red and 5 green, only include the 3 closest green. But, also record the nMax (in the previous example this would be 5. Also store all r and g cones in fullRCones and fullGCones.
+	int n = //TODO: smallest number of cones, in either red or green;
+	int nMax = //TODO: largest number of cones, in either red or green.
+	float [n][2] gCones = //TODO: fill;
+	float [n][2] rCones = //TODO: fill;
+	//TODO: make the fullRCones and fullGCones with correct sizes.
+	bool runCircle;
+	if(n>=3){
+		//finding 3 smallest r and g cones
+		Vec2<> r1 = (rCones[0][0],rCones[0][1]);
+		Vec2<> r2 = (-1,-1);
+		Vec2<> r3 = (-1,-1);
+		Vec2<> g1 = (gCones[0][0],gCones[0][1]);
+		Vec2<> g2 = (-1,-1);
+		Vec2<> g3 = (-1,-1);
+		for(int i=0;i<n;i++){
+			
+		}
+
+	}
+	else if(n==2){
+
+	}
+	else if(n==1){
+		
+	}
+	else if(n==0){
+		if(nMax==0){
+			control.throttle = 0;
+			control.steering = 0;
+			control.braking = 1;
+		}
+		else{
+			if(fullRCones.empty()){
+				control.steering = -.6;
+			}
+			else{
+				control.steering = .6;
+			}
+			control.throttle = .12;
+		}
+	}
+	//What does clamp do??
+	clamp(control);
+	pub_publish(control);
 }
 
 //takes in 3 Vec2 points, and returns a float[3] in the form {x,y,r} for the circle defined by those 3 points.

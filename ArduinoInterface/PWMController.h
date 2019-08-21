@@ -2,10 +2,9 @@
 
 #include <Servo.h>
 
-void (*resetFunc)(void) = 0;
 // PWM increment for each input
 // Response times for the steering and throttle inputs
-const uint8_t DELTA_PW = 10;
+const uint8_t DELTA_PW = 20;
 // Max change in PWM before arduino is shut off
 const uint8_t MAX_DELTA_PW = 10;
 
@@ -50,7 +49,7 @@ public:
   PWMController() : Servo() {}
 
   void Initialize(CONTROLLER_TYPE controller_type, uint8_t pin) {
-    this->type = type;
+    this->type = controller_type;
     TRIM_PW = 0;
     attach(pin);
 
@@ -117,9 +116,6 @@ public:
 
     // Clamp value
     current = current >= MAX_PW ? MAX_PW : current <= MIN_PW ? MIN_PW : current;
-
-    if (abs(last - current) > MAX_DELTA_PW)
-      resetFunc();
 
     // Write value to servo
     writeMicroseconds(current);

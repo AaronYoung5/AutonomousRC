@@ -1,6 +1,6 @@
 <launch>
 
-  <arg name="simulating" default="true"/>
+  <arg name="simulating" default="false"/>
 
   <group ns="arduino" unless="$(arg simulating)">
     <arg name="keyboard" default="true"/>
@@ -8,7 +8,9 @@
     <node pkg="arduino_interface" type="arduino_interface" name="arduino_interface" output="screen" required="true" respawn="false"/>
 
     <group if="$(arg keyboard)">
-      <node pkg="keyboard_control" type="keyboard_control" name="keyboard_control" output="screen" respawn="false"/>
+      <node pkg="keyboard_control" type="keyboard_control" name="keyboard_control" output="screen" respawn="false">
+	<remap from="/arduino/control" to="/control/control"/>
+	</node>
     </group>
     <group unless="$(arg keyboard)">
       <node pkg="wheel_control" type="wheel_control" name="wheel_control" output="screen" respawn="false"/>
