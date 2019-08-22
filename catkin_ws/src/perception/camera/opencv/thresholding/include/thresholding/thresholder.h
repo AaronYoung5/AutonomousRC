@@ -30,6 +30,12 @@ private:
 
   std::vector<cv::Rect> Threshold(cv_bridge::CvImagePtr &cv_ptr,
                                   cv::Scalar lower_hsv, cv::Scalar upper_hsv);
+  std::vector<cv::Rect> Threshold(cv_bridge::CvImagePtr &cv_ptr,
+                                  cv::Scalar lower_hsv, cv::Scalar upper_hsv,
+                                  bool invert);
+
+  void drawDetectedCones(cv_bridge::CvImagePtr &cv_ptr,
+                         std::vector<cv::Rect> cones, cv::Scalar color);
 
   std::vector<perception_msgs::Cone>
   CreateConeMsgArray(std::vector<cv::Rect> &rects, uint8_t color);

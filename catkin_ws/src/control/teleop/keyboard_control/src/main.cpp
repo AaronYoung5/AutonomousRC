@@ -13,7 +13,7 @@
 
 class Teleop {
 public:
-  Teleop();
+  Teleop(ros::NodeHandle &n);
   void keyLoop();
   void clamp();
 
@@ -23,10 +23,14 @@ private:
 
   float throttle_;
   float steering_;
+  float braking_;
 };
 
-Teleop::Teleop() : throttle_(0), steering_(0) {
-  pub = n.advertise<common_msgs::Control>("control", 1000);
+Teleop::Teleop(ros::NodeHandle &n) : throttle_(0), steering_(0) {
+  std::string control_topic;
+  n.param<std::string>("/control_topic", control_topic, "control");
+
+  pub = n.advertise<common_msgs::Control>(control_topic, 1);
 };
 
 int kfd = 0;
@@ -65,12 +69,13 @@ void Teleop::keyLoop() {
       break;
     case KEYCODE_U:
       throttle_ += .01;
+      braking_ -= .025;
       // ROS_INFO("UP");
       dirty = true;
       break;
     case KEYCODE_D:
-      // throttle_ -= .025;
-      throttle_ -= .01;
+      braking_ += .01;
+      throttle_ -= .025;
       // ROS_INFO("DOWN");
       dirty = true;
       break;
@@ -82,6 +87,7 @@ void Teleop::keyLoop() {
       common_msgs::Control msg;
       msg.throttle = throttle_;
       msg.steering = steering_;
+      msg.braking = braking_;
       pub.publish(msg);
       dirty = false;
     }
@@ -89,8 +95,9 @@ void Teleop::keyLoop() {
 }
 
 void Teleop::clamp() {
-  throttle_ = throttle_ > 1 ? 1 : throttle_ < -1 ? -1 : throttle_;
+  throttle_ = throttle_ > 1 ? 1 : throttle_ < 0 ? 0 : throttle_;
   steering_ = steering_ > 1 ? 1 : steering_ < -1 ? -1 : steering_;
+  braking_ = braking_ > 1 ? 1 : braking_ < 0 ? 0 : braking_;
 }
 
 void quit(int sig) {
@@ -100,8 +107,10 @@ void quit(int sig) {
 }
 
 int main(int argc, char **argv) {
-  ros::init(argc, argv, "teleop");
-  Teleop teleop;
+  ros::init(argc, argv, "keyboard_control");
+  ros::NodeHandle n;
+
+  Teleop teleop(n);
 
   signal(SIGINT, quit);
   teleop.keyLoop();

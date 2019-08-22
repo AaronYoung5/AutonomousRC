@@ -39,19 +39,37 @@ void Thresholder::imageCallback(const sensor_msgs::Image::ConstPtr &msg) {
     red_cones =
         Threshold(cv_ptr, cv::Scalar(0, 50, 0), cv::Scalar(2, 200, 255));
   } else {
-    green_cones =
-        Threshold(cv_ptr, cv::Scalar(70, 200, 50), cv::Scalar(90, 255, 255));
-    red_cones =
-        Threshold(cv_ptr, cv::Scalar(0, 200, 50), cv::Scalar(7, 255, 255));
-  }
+    // Works inside sbel room
+    // green_cones =
+    // Threshold(cv_ptr, cv::Scalar(70, 200, 50), cv::Scalar(90, 255, 255) );
+    // red_cones =
+    // Threshold(cv_ptr, cv::Scalar(0, 200, 50), cv::Scalar(7, 255, 255) );
 
-  if (image_display_)
+    // Works outside sbel room
+    green_cones =
+        Threshold(cv_ptr, cv::Scalar(70, 50, 50), cv::Scalar(90, 255, 255));
+    red_cones = Threshold(cv_ptr, cv::Scalar(80, 75, 50),
+                          cv::Scalar(100, 255, 255), true);
+    // std::vector<cv::Rect> temp =
+    // Threshold(cv_ptr, cv::Scalar(170, 150, 100), cv::Scalar(179, 255, 255));
+    // red_cones.insert(red_cones.end(), temp.begin(), temp.end());
+  }
+  
+  // If desired, draw and display bounded rectangles on image
+  if (image_display_) {
+    auto yellow = cv::Scalar(0, 255, 255);
+    // Draw green detected cones
+    drawDetectedCones(cv_ptr, green_cones, yellow);
+    // Draw red detected cones
+    drawDetectedCones(cv_ptr, red_cones, yellow);
     cv::imshow(OBJ_WINDOW, cv_ptr->image);
+  }
 
   perception_msgs::ConeImageMap cone_msg;
   cone_msg.green_cones =
       CreateConeMsgArray(green_cones, perception_msgs::Cone::GREEN);
-  cone_msg.red_cones = CreateConeMsgArray(red_cones, perception_msgs::Cone::RED);
+  cone_msg.red_cones =
+      CreateConeMsgArray(red_cones, perception_msgs::Cone::RED);
   cone_msg.height = msg->height;
   cone_msg.width = msg->width;
 
@@ -70,21 +88,28 @@ std::vector<cv::Rect> Thresholder::Threshold(cv_bridge::CvImagePtr &cv_ptr,
   // Threshold image using provided range
   cv::Mat1b mask;
   cv::inRange(image_hsv, lower_hsv, upper_hsv, mask);
+  // cv::imshow(THRESH_WINDOW, mask);
 
   // Erode and dialate thresholded image to magnify results
-  cv::Mat element = cv::getStructuringElement(cv::MORPH_RECT, cv::Size(10, 10),
+  cv::Mat element = cv::getStructuringElement(cv::MORPH_RECT, cv::Size(5, 5),
                                               cv::Point(-1, -1));
+  cv::erode(mask, mask, element);
+  cv::dilate(mask, mask, element);
   cv::erode(mask, mask, element);
 
   element = cv::getStructuringElement(cv::MORPH_RECT, cv::Size(20, 20),
                                       cv::Point(-1, -1));
   cv::dilate(mask, mask, element);
+  // cv::dilate(mask, mask, element);
+  // cv::dilate(mask, mask, element);
+  // cv::imshow(CANNY_WINDOW, mask);
 
   // Detect edges
   cv::Mat1b canny_output;
   cv::Canny(mask, canny_output, 1, 1);
   std::vector<std::vector<cv::Point>> contours;
   findContours(canny_output, contours, cv::RETR_TREE, cv::CHAIN_APPROX_SIMPLE);
+  // cv::imshow(CANNY_WINDOW, canny_output);
 
   // Create bounded rectangles around detected cones
   std::vector<std::vector<cv::Point>> contours_poly(contours.size());
@@ -92,23 +117,77 @@ std::vector<cv::Rect> Thresholder::Threshold(cv_bridge::CvImagePtr &cv_ptr,
   for (size_t i = 0; i < contours.size(); i++) {
     cv::approxPolyDP(contours[i], contours_poly[i], 3, true);
     cv::Rect temp = cv::boundingRect(contours_poly[i]);
-    if (temp.area() > 500) {
-      cones.push_back(temp);
-    }
-  }
-
-  // If desired, draw and display bounded rectangles on image
-  if (image_display_) {
-    cv::Scalar avg = (upper_hsv + lower_hsv) / 2.0;
-    avg[0] >= 90 ? avg[0] -= 90 : avg[0] += 90;
-    avg[1] = 255;
-    avg[2] = 255;
-    for (cv::Rect cone : cones) {
-      cv::rectangle(cv_ptr->image, cone.tl(), cone.br(), ScalarHSV2BGR(avg), 2);
+    if (temp.area() > 100) {
+      if (temp.tl().y > cv_ptr->image.size().height / 3.0f && temp.area() > 50)
+        cones.push_back(temp);
     }
   }
 
   return cones;
+}
+
+std::vector<cv::Rect> Thresholder::Threshold(cv_bridge::CvImagePtr &cv_ptr,
+                                             cv::Scalar lower_hsv,
+                                             cv::Scalar upper_hsv,
+                                             bool invert) {
+  // Convert image to hsv format
+  cv::Mat image_hsv;
+  if (invert) {
+    cv::bitwise_not(cv_ptr->image, cv_ptr->image);
+  }
+  cv::cvtColor(cv_ptr->image, image_hsv, cv::COLOR_BGR2HSV);
+
+  // Threshold image using provided range
+  cv::Mat1b mask;
+  cv::inRange(image_hsv, lower_hsv, upper_hsv, mask);
+  cv::imshow(THRESH_WINDOW, mask);
+
+  // Erode and dialate thresholded image to magnify results
+  cv::Mat element = cv::getStructuringElement(cv::MORPH_RECT, cv::Size(5, 5),
+                                              cv::Point(-1, -1));
+  cv::erode(mask, mask, element);
+  cv::dilate(mask, mask, element);
+  cv::erode(mask, mask, element);
+
+  element = cv::getStructuringElement(cv::MORPH_RECT, cv::Size(20, 20),
+                                      cv::Point(-1, -1));
+  cv::dilate(mask, mask, element);
+  // cv::dilate(mask, mask, element);
+  // cv::dilate(mask, mask, element);
+  cv::imshow(CANNY_WINDOW, mask);
+
+  // Detect edges
+  cv::Mat1b canny_output;
+  cv::Canny(mask, canny_output, 1, 1);
+  std::vector<std::vector<cv::Point>> contours;
+  findContours(canny_output, contours, cv::RETR_TREE, cv::CHAIN_APPROX_SIMPLE);
+  // cv::imshow(CANNY_WINDOW, canny_output);
+
+  // Create bounded rectangles around detected cones
+  std::vector<std::vector<cv::Point>> contours_poly(contours.size());
+  std::vector<cv::Rect> cones;
+  for (size_t i = 0; i < contours.size(); i++) {
+    cv::approxPolyDP(contours[i], contours_poly[i], 3, true);
+    cv::Rect temp = cv::boundingRect(contours_poly[i]);
+    if (temp.area() > 100) {
+      if (temp.tl().y > cv_ptr->image.size().height / 3.0f && temp.area() > 50)
+        cones.push_back(temp);
+    }
+  }
+
+  if (invert) {
+    cv::bitwise_not(cv_ptr->image, cv_ptr->image);
+  }
+
+  return cones;
+}
+
+void Thresholder::drawDetectedCones(cv_bridge::CvImagePtr &cv_ptr,
+                                    std::vector<cv::Rect> cones,
+                                    cv::Scalar color) {
+  for (cv::Rect cone : cones) {
+    cv::rectangle(cv_ptr->image, cone.tl(), cone.br(), color, 2);
+  }
 }
 
 std::vector<perception_msgs::Cone>

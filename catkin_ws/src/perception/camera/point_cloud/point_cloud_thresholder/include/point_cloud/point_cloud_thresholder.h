@@ -1,7 +1,7 @@
 #include "ros/ros.h"
 #include "sensor_msgs/PointCloud2.h"
 
-class PointCloudThresholder{
+class PointCloudThresholder {
 private:
   ros::Subscriber sub_;
 
@@ -14,4 +14,5 @@ public:
 
 private:
   void imageCallback(const sensor_msgs::PointCloud2::ConstPtr &msg);
+  void createPCL2(sensor_msgs::PointCloud2 &msg, std::vector<uint8_t> &points);
 };

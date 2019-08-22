@@ -1,8 +1,8 @@
 #include "arduino_interface/serial_handler.h"
 
 SerialHandler::SerialHandler(ros::NodeHandle &n)
-    : controls_sub_(
-          n.subscribe("/control/control", 1, &SerialHandler::controlsCallback, this)) {}
+    : controls_sub_(n.subscribe("/control/control", 1,
+                                &SerialHandler::controlsCallback, this)) {}
 
 SerialHandler::~SerialHandler() { serial_.close(); }
 
@@ -47,12 +47,14 @@ void SerialHandler::sendControls() {
   buffer[0] = size;
   serial_.flush();
   serial_.write(buffer, size);
-   std::cout << "Motor Sent :: "
-   << (int)(*(struct ControlMessage *)(buffer + sizeof(uint8_t))).throttle <<
-   std::endl;
-   std::cout << "Steering Sent :: "
-   << (int)(*(struct ControlMessage *)(buffer + sizeof(uint8_t))).steering <<
-   std::endl;
+  std::cout
+      << "Motor Sent :: "
+      << (int)(*(struct ControlMessage *)(buffer + sizeof(uint8_t))).throttle
+      << std::endl;
+  std::cout
+      << "Steering Sent :: "
+      << (int)(*(struct ControlMessage *)(buffer + sizeof(uint8_t))).steering
+      << std::endl;
 
   serial_.readline();
 }
@@ -64,7 +66,7 @@ void SerialHandler::controlsCallback(
   int8_t steering = msg->steering * 100;
 
   // Clamp controls
-  throttle = throttle > 15 ? 15 : throttle;
+  throttle = throttle > 12 ? 12 : throttle;
   // steering = steering > 40 ? 40 : steering < -40 ? -40 : steering;
 
   message_ = ControlMessage{throttle, steering};
