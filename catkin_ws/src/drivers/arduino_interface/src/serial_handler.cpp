@@ -66,7 +66,7 @@ void SerialHandler::controlsCallback(
   int8_t steering = msg->steering * 100;
 
   // Clamp controls
-  throttle = throttle > 12 ? 12 : throttle;
+  throttle = throttle > 16 ? 16 : throttle;
   // steering = steering > 40 ? 40 : steering < -40 ? -40 : steering;
 
   message_ = ControlMessage{throttle, steering};

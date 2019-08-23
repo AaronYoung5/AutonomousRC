@@ -16,4 +16,3 @@ private:
   void imageCallback(const sensor_msgs::PointCloud2::ConstPtr &msg);
   void createPCL2(sensor_msgs::PointCloud2 &msg, std::vector<uint8_t> &points);
 };
-

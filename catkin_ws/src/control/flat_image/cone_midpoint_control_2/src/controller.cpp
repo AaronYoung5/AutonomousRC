@@ -21,9 +21,36 @@ void Controller::imageCallback(const perception_msgs::ConeImageMap::ConstPtr &ms
     control.throttle = 0;
     control.steering = 0;
     control.braking = 1;
-  } else if (green_cones.size() == 0 || red_cones.size() == 0) {
-    control.throttle = .12;
-    control.steering = green_cones.size() == 0 ? .6 : -.6;
+  }else if (red_cones.size()==0){
+	  control.throttle = 0.13;
+	  Vec2<> lowestCone ((green_cones[0].tl.x+green_cones[0].br.x)/2,(green_cones[0].tl.y+green_cones[0].br.y)/2);
+	  for(int i=0;i<green_cones.size();i++){
+		Vec2<> hold((green_cones[i].tl.x+green_cones[i].br.x)/2,(green_cones[0].tl.y+green_cones[0].br.y)/2);
+		if(hold.y()>lowestCone.y()){
+			lowestCone = hold;
+		}
+	  }
+	  if(lowestCone.y()/height<0.65){
+		  control.steering = -0.3;
+	  }
+	  else{
+		  control.steering = -.6;
+	  }
+  }else if (green_cones.size()==0){
+	control.throttle = 0.13;
+	Vec2<> lowestCone ((red_cones[0].tl.x+red_cones[0].br.x)/2,(red_cones[0].tl.y+red_cones[0].br.y)/2);
+	for(int i=0;i<red_cones.size();i++){
+		Vec2<> hold((red_cones[i].tl.x+red_cones[i].br.x)/2,(red_cones[i].tl.y+red_cones[i].br.y)/2);
+		if(hold.y()>lowestCone.y()){
+			lowestCone = hold;
+		}
+	}
+	if(lowestCone.y()/height<0.65){
+		control.steering = 0.3;
+	}
+	else{
+		control.steering = 0.6;
+	}
   } else if (red_cones.size() == 1 || green_cones.size() == 1) {
     Vec2<> avgG1((green_cones[0].tl.x + green_cones[0].br.x) / 2,
                  (green_cones[0].tl.y + green_cones[0].br.y) / 2);
@@ -47,7 +74,7 @@ void Controller::imageCallback(const perception_msgs::ConeImageMap::ConstPtr &ms
     Vec2<> destination((avgR1 + avgG1) / 2);
     Vec2<> center(width / 2, height / 2);
     control.steering = (destination.x() - center.x()) / center.x();
-    control.throttle = .12+0.08*abs(control.steering);
+    control.throttle = .2-0.07*abs(control.steering);
   } else {
     //   // finding lower left green cone
     Vec2<> avgG1((green_cones[0].tl.x + green_cones[0].br.x) / 2,
@@ -113,7 +140,7 @@ void Controller::imageCallback(const perception_msgs::ConeImageMap::ConstPtr &ms
     // setting steering
     control.steering = (destination.x() - center.x()) / (float)center.x();
 
-    control.throttle = .12+0.08*abs(control.steering);
+    control.throttle = .2-0.07*abs(control.steering);
   }
 
   clamp(control);

@@ -29,8 +29,6 @@ private:
   void imageCallback(const sensor_msgs::Image::ConstPtr &msg);
 
   std::vector<cv::Rect> Threshold(cv_bridge::CvImagePtr &cv_ptr,
-                                  cv::Scalar lower_hsv, cv::Scalar upper_hsv);
-  std::vector<cv::Rect> Threshold(cv_bridge::CvImagePtr &cv_ptr,
                                   cv::Scalar lower_hsv, cv::Scalar upper_hsv,
                                   bool invert);
 
@@ -39,5 +37,6 @@ private:
 
   std::vector<perception_msgs::Cone>
   CreateConeMsgArray(std::vector<cv::Rect> &rects, uint8_t color);
+
   cv::Scalar ScalarHSV2BGR(cv::Scalar hsv_scalar);
 };

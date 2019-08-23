@@ -1,4 +1,4 @@
-#include "point_cloud/point_cloud_thresholder.h"
+#include "pcl_cone_detect/pcl_cone_detector.h"
 
 PointCloudThresholder::PointCloudThresholder(ros::NodeHandle &n) {
   std::string image_topic, cone_topic;
@@ -17,65 +17,48 @@ PointCloudThresholder::PointCloudThresholder(ros::NodeHandle &n) {
 void PointCloudThresholder::imageCallback(
     const sensor_msgs::PointCloud2::ConstPtr &msg) {
   std::vector<uint8_t> in_range_points;
-  // sensor_msgs::PointCloud2 new_msg;
-  // new_msg = *msg;
 
-  bool thresh_green = false;
-  uint8_t redLow, redHigh;
-  uint8_t greenLow, greenHigh;
-  uint8_t blueLow, blueHigh;
-  if (thresh_green) {
-	  // Green Cone Threshold
-	  // 	R :: [20, 200]
-	  // 	G :: [120, 255]
-	  // 	B :: [0, 50]
-	  redLow = 20;
-	  redHigh = 200;
+  bool redInRange = false;
+  bool greenInRange = false;
+  bool blueInRange = false;
 
-	  greenLow = 120;
-	  greenHigh = 255;
+  // looking for green cones right now
+  uint8_t redLow = 0;
+  uint8_t redHigh = 255;
 
-	  blueLow = 0;
-	  blueHigh = 50;
-  }
-  else {
-	  // Red Cone Threshold
-	  // 	R :: [0, 100]
-	  // 	G :: [0, 50]
-	  // 	B :: [90, 255]
-	  redLow = 0;
-	  redHigh = 100;
+  uint8_t greenLow = 0;
+  uint8_t greenHigh = 255;
 
-	  greenLow = 0;
-	  greenHigh = 100;
-
-	  blueLow = 150;
-	  blueHigh = 255;
-  }
-
+  uint8_t blueLow = 0;
+  uint8_t blueHigh = 255;
 
   int j = 0;
-  int offset = 12;
-  for (int i = offset; i < (msg->row_step * msg->height); i += 16) { // loop through every point in pointcloud
-  bool redInRange = true;
-  bool greenInRange = true;
-  bool blueInRange = true;
+	int offset = 12;
+  for (int i = offset; i < (msg->row_step * msg->height);
+       i += 16) { // loop through every point in pointcloud
+    if (i < (msg->row_step * msg->height)) {
+      // ROS_INFO_STREAM("RGB :: [" << (int)msg->data[i] << ", " <<
+      // (int)msg->data[i+1] << ", " << (int)msg->data[i+2] << "]");
+    }
     if (msg->data[i] < redLow || msg->data[i] > redHigh) {
+			ROS_INFO("RED :: not in range");
       redInRange = false;
     }
     if (msg->data[i + 1] < greenLow || msg->data[i + 1] > greenHigh) {
+			ROS_INFO("GREEN :: not in range");
       greenInRange = false;
     }
     if (msg->data[i + 2] < blueLow || msg->data[i + 2] > blueHigh) {
+			ROS_INFO("BLUE :: not in range");
       blueInRange = false;
     }
 
-    if (redInRange && greenInRange &&
-         blueInRange) { // if red green and blue are with in range, add to the new point_cloud
-      in_range_points.resize(in_range_points.size() + 16);
+    if ((redInRange && greenInRange &&
+         blueInRange)) { // if red green and blue aren't in range then make
+                         // pixel black
       memcpy(&in_range_points.data()[j], &(msg->data[i - offset]), 16);
       j += 16;
-    } 
+    }
   } // end for loop
   sensor_msgs::PointCloud2 new_msg;
   createPCL2(new_msg, in_range_points);
@@ -84,14 +67,14 @@ void PointCloudThresholder::imageCallback(
 
 void PointCloudThresholder::createPCL2(sensor_msgs::PointCloud2 &msg, std::vector<uint8_t>& points) {
   msg.header.stamp = ros::Time::now();
-  msg.header.frame_id = "zed_left_camera_frame";
+  msg.header.frame_id = "base_link";
 
   // Convert x/y/z to fields
-  msg.fields.resize(4);
+  msg.fields.resize(3);
   msg.fields[0].name = "x";
   msg.fields[1].name = "y";
   msg.fields[2].name = "z";
-  msg.fields[3].name = "rgb";
+  msg.fields[2].name = "rgb";
 
   int offset = 0;
   for (size_t d = 0; d < msg.fields.size(); d++, offset += 4) {
@@ -109,7 +92,4 @@ void PointCloudThresholder::createPCL2(sensor_msgs::PointCloud2 &msg, std::vecto
   msg.height = 1;
 
   msg.row_step = msg.point_step * msg.width;
-
-  msg.data.resize(msg.row_step);
-  memcpy(&msg.data[0], points.data(), msg.row_step);
 }

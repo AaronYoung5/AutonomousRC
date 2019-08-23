@@ -6,21 +6,16 @@
   <arg name="cone_topic" default="/perception/cone_image_map"/>
   <!-- Use simulated sensors -->
   <arg name="simulating" default="true"/>
-  <!-- Use bag file -->
-  <arg name="bag_file" default="false"/>
-  <group unless="$(arg simulating)">
-    <include file="$(find arduino_interface)/launch/arduino_interface.launch"/>
-  </group>
+  <include file="$(find arduino_interface)/launch/arduino_interface.launch"/>
   <!-- Include thresholding launch file -->
   <include file="$(find thresholding)/launch/thresholding.launch">
     <arg name="simulating" value="$(arg simulating)"/>
     <arg name="cone_topic" value="$(arg cone_topic)"/>
-    <arg name="bag_file" value="$(arg bag_file)"/>
   </include>
   <group ns="control">
     <group ns="flat_image">
-      <!-- Launch control node -->
-      <node pkg="cone_midpoint_control_2" type="cone_midpoint_control_2" name="cone_midpoint_control_2" output="screen" required="true">
+      <!-- Launch thresholding node -->
+      <node pkg="cone_midpoint_control" type="cone_midpoint_control" name="cone_midpoint_control" output="screen" required="true">
         <param name="control_topic" value="$(arg control_topic)"/>
         <param name="cone_topic" value="$(arg cone_topic)"/>
       </node>
