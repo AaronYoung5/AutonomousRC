@@ -11,7 +11,7 @@ find_package(catkin REQUIRED COMPONENTS
 catkin_package(
   CATKIN_DEPENDS
   std_msgs
-    serial
+  serial
 )
 
 include_directories(
@@ -22,3 +22,7 @@ include_directories(
 add_executable(arduino_interface src/main.cpp src/serial_handler.cpp)
 target_link_libraries(arduino_interface ${catkin_LIBRARIES})
 add_dependencies(arduino_interface ${catkin_EXPORTED_TARGETS})
+
+add_executable(arduino_interface_test src/tester.cpp)
+target_link_libraries(arduino_interface_test ${catkin_LIBRARIES})
+add_dependencies(arduino_interface_test ${catkin_EXPORTED_TARGETS})

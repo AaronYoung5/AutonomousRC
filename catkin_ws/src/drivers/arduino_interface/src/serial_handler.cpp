@@ -68,10 +68,8 @@ void SerialHandler::controlsCallback(
   // Clamp controls
   int max_throttle = 11;
   throttle = throttle > max_throttle ? max_throttle : throttle;
-  // steering = steering > 40 ? 40 : steering < -40 ? -40 : steering;
-
-  ros::Duration diff = ros::Time::now() - msg->header;
-  ROS_INFO_STREAM("Diff :: " << diff);
+  if (abs(steering * 1.5) < 100)
+    steering *= 1.5;
 
   message_ = ControlMessage{throttle, steering};
   sendControls();
