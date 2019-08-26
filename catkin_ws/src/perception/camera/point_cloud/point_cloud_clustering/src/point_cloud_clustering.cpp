@@ -1,4 +1,4 @@
-#include "pcl_cone_detect/pcl_cone_detector.h"
+#include "point_cloud_clustering/point_cloud_clustering.h"
 
 PointCloudThresholder::PointCloudThresholder(ros::NodeHandle &n) {
   std::string image_topic, cone_topic;

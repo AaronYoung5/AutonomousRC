@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <package format="2">
-  <name>pcl_cone_detect</name>
+  <name>point_cloud_clustering</name>
   <version>0.0.0</version>
   <description>
-    thresholding package
+    point_cloud_clustering package
   </description>
 
   <license>TODO</license>

@@ -99,13 +99,14 @@ public:
       temp = map(percent, (int8_t)100, (int8_t)-100, MIN_PW, MAX_PW);
       break;
     }
-    target += abs(temp - target) < DELTA_PW
-                  ? 0
-                  : temp > target ? DELTA_PW : -DELTA_PW;
+    int diff = temp - target;
+    target += abs(diff) < DELTA_PW
+                  ? diff 
+                  : diff > 0 ? DELTA_PW : -DELTA_PW;
 
     // Integrate dynamics, taking as many steps as required to reach the value
     // 'step'
-    uint8_t gain = 4; // Gain for internal dynamics
+    uint8_t gain = 15; // Gain for internal dynamics
 
     // Time step for internal dynamics
     uint8_t step = 1; // ms
@@ -121,6 +122,4 @@ public:
     writeMicroseconds(current);
     last = current;
   }
-
-  int GetCurrent() { return (int)target; }
 };

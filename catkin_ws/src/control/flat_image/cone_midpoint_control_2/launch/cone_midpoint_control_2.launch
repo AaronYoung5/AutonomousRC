@@ -1,4 +1,6 @@
 <launch>
+  <arg name="record_cam" default="false"/>
+  <arg name="record_pc" default="false"/>
   <!-- Control topic to publish to -->
   <arg name="control_topic" default="/control/control"/>
   <param name="/control_topic" value="/control/control"/>
@@ -26,4 +28,6 @@
       </node>
     </group>
   </group>
+  <node pkg="rosbag" type="record" name="rosbag_record_cam" if="$(arg record_cam)" args="record /sensor_data/raw_data/camera -o /home/sbel/rosbag_files/cam_thresholding"/>
+  <node pkg="rosbag" type="record" name="rosbag_record_pc" if="$(arg record_pc)" args="record /zed/zed_node/point_cloud/cloud_registered -o /home/sbel/rosbag_files/pc_thresholding"/>
 </launch>

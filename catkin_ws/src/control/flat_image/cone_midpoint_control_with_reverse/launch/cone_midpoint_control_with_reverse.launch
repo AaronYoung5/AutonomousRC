@@ -22,7 +22,7 @@
   <group ns="control">
     <group ns="flat_image">
       <!-- Launch control node -->
-      <node pkg="cone_bounce_control" type="cone_bounce_control" name="cone_bounce_control" output="screen" required="true">
+      <node pkg="cone_midpoint_control_with_reverse" type="cone_midpoint_control_with_reverse" name="cone_midpoint_control_with_reverse" output="screen" required="true">
         <param name="control_topic" value="$(arg control_topic)"/>
         <param name="cone_topic" value="$(arg cone_topic)"/>
       </node>

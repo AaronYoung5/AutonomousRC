@@ -1,7 +1,7 @@
 #include "ros/ros.h"
 #include "sensor_msgs/PointCloud2.h"
 
-class PointCloudThresholder {
+class PointCloudClustering {
 private:
   ros::Subscriber sub_;
 
@@ -10,9 +10,9 @@ private:
   bool image_display_, image_simulated_;
 
 public:
-  PointCloudThresholder(ros::NodeHandle &n);
+  PointCloudClustering(ros::NodeHandle &n);
 
 private:
-  void imageCallback(const sensor_msgs::PointCloud2::ConstPtr &msg);
+  void cloudCallback(const sensor_msgs::PointCloud2::ConstPtr &msg);
   void createPCL2(sensor_msgs::PointCloud2 &msg, std::vector<uint8_t> &points);
 };

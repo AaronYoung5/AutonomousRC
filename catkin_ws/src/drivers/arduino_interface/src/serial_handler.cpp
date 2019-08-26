@@ -47,14 +47,14 @@ void SerialHandler::sendControls() {
   buffer[0] = size;
   serial_.flush();
   serial_.write(buffer, size);
-  std::cout
-      << "Motor Sent :: "
-      << (int)(*(struct ControlMessage *)(buffer + sizeof(uint8_t))).throttle
-      << std::endl;
-  std::cout
-      << "Steering Sent :: "
-      << (int)(*(struct ControlMessage *)(buffer + sizeof(uint8_t))).steering
-      << std::endl;
+  // std::cout
+  //     << "Motor Sent :: "
+  //     << (int)(*(struct ControlMessage *)(buffer + sizeof(uint8_t))).throttle
+  //     << std::endl;
+  // std::cout
+  //     << "Steering Sent :: "
+  //     << (int)(*(struct ControlMessage *)(buffer + sizeof(uint8_t))).steering
+  //     << std::endl;
 
   serial_.readline();
 }
@@ -66,8 +66,12 @@ void SerialHandler::controlsCallback(
   int8_t steering = msg->steering * 100;
 
   // Clamp controls
-  throttle = throttle > 16 ? 16 : throttle;
+  int max_throttle = 11;
+  throttle = throttle > max_throttle ? max_throttle : throttle;
   // steering = steering > 40 ? 40 : steering < -40 ? -40 : steering;
+
+  ros::Duration diff = ros::Time::now() - msg->header;
+  ROS_INFO_STREAM("Diff :: " << diff);
 
   message_ = ControlMessage{throttle, steering};
   sendControls();

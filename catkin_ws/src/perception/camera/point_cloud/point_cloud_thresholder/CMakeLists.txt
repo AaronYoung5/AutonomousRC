@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(point_cloud)
+project(point_cloud_thresholder)
 
 find_package(catkin REQUIRED COMPONENTS
   roscpp
@@ -18,6 +18,6 @@ catkin_package(
 
 )
 
-add_executable(point_cloud src/main.cpp src/point_cloud_thresholder.cpp)
-target_link_libraries(point_cloud ${catkin_LIBRARIES})
-add_dependencies(point_cloud ${catkin_EXPORTED_TARGETS})
+add_executable(point_cloud_thresholder src/main.cpp src/point_cloud_thresholder.cpp)
+target_link_libraries(point_cloud_thresholder ${catkin_LIBRARIES})
+add_dependencies(point_cloud_thresholder ${catkin_EXPORTED_TARGETS})

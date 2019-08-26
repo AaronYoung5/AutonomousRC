@@ -1,17 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <package format="2">
-  <name>point_cloud_thresholder</name>
+  <name>cone_midpoint_control_with_reverse</name>
   <version>0.0.0</version>
   <description>
-    point_cloud_thresholder package
+    cone_midpoint_control_with_reverse package
   </description>
 
   <license>TODO</license>
   <author>TODO</author>
   <maintainer email="TODO@TODO.com">TODO</maintainer>
 
+  <depend>common_msgs</depend>
   <depend>perception_msgs</depend>
-  <depend>image_transport</depend>
+  <depend>control_utilities</depend>
+  <depend>common_utilities</depend>
 
   <buildtool_depend>catkin</buildtool_depend>
 </package>

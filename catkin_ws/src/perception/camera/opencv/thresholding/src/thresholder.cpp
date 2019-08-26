@@ -63,6 +63,7 @@ void Thresholder::imageCallback(const sensor_msgs::Image::ConstPtr &msg) {
   }
 
   perception_msgs::ConeImageMap cone_msg;
+  cone_msg.header = msg->header;
   cone_msg.green_cones =
       CreateConeMsgArray(green_cones, perception_msgs::Cone::GREEN);
   cone_msg.red_cones =
