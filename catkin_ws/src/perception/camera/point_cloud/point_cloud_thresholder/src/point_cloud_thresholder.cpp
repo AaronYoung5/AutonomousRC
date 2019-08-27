@@ -20,7 +20,7 @@ void PointCloudThresholder::imageCallback(
   // sensor_msgs::PointCloud2 new_msg;
   // new_msg = *msg;
 
-  bool thresh_green = false;
+  bool thresh_green = true;
   uint8_t redLow, redHigh;
   uint8_t greenLow, greenHigh;
   uint8_t blueLow, blueHigh;
@@ -75,7 +75,7 @@ void PointCloudThresholder::imageCallback(
       in_range_points.resize(in_range_points.size() + 16);
       memcpy(&in_range_points.data()[j], &(msg->data[i - offset]), 16);
       j += 16;
-    } 
+    }
   } // end for loop
   sensor_msgs::PointCloud2 new_msg;
   createPCL2(new_msg, in_range_points);

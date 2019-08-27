@@ -8,10 +8,10 @@ int main(int argc, char **argv) {
 
   Thresholder converter(n);
 
-  ros::Rate r(5);
+  // ros::Rate r(1);
 
   while(ros::ok()) {
     ros::spinOnce();
-    r.sleep();
+    // r.sleep();
   }
 }
