@@ -18,6 +18,7 @@ private:
   image_transport::Subscriber sub_;
 
   ros::Publisher pub_;
+  image_transport::Publisher cone_pub_;
 
   bool image_display_, image_simulated_;
 

@@ -12,6 +12,7 @@ Thresholder::Thresholder(ros::NodeHandle &n) {
   sub_ = it.subscribe(image_topic, 1, &Thresholder::imageCallback, this);
 
   pub_ = n.advertise<perception_msgs::ConeImageMap>(cone_topic, 1);
+  cone_pub_ = it.advertise("/perception/cone_recognition_image", 1);
 }
 
 void Thresholder::imageCallback(const sensor_msgs::Image::ConstPtr &msg) {
@@ -73,6 +74,8 @@ void Thresholder::imageCallback(const sensor_msgs::Image::ConstPtr &msg) {
   cone_msg.width = msg->width;
 
   pub_.publish(cone_msg);
+
+  cone_pub_.publish(*cv_ptr->toImageMsg());
 
   cv::waitKey(1);
 }

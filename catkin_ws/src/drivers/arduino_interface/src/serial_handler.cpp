@@ -61,6 +61,10 @@ void SerialHandler::sendControls() {
 
 void SerialHandler::controlsCallback(
     const common_msgs::Control::ConstPtr &msg) {
+
+  ros::Duration diff = ros::Time::now() - msg->header.stamp;
+  ROS_INFO_STREAM("Diff :: " << diff);
+
   // Get controls
   int8_t throttle = msg->throttle * 100;
   int8_t steering = msg->steering * 100;
