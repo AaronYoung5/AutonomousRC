@@ -48,8 +48,8 @@ void Thresholder::imageCallback(const sensor_msgs::Image::ConstPtr &msg) {
     // Works outside sbel room
     green_cones = Threshold(cv_ptr, cv::Scalar(70, 75, 50),
                             cv::Scalar(90, 255, 255), false);
-    // red_cones = Threshold(cv_ptr, cv::Scalar(80, 75, 50),
-    // cv::Scalar(100, 255, 255), true);
+    red_cones = Threshold(cv_ptr, cv::Scalar(80, 75, 50),
+                          cv::Scalar(100, 255, 255), true);
   }
 
   // If desired, draw and display bounded rectangles on image
