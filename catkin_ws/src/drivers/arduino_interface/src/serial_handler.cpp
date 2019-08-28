@@ -1,5 +1,7 @@
 #include "arduino_interface/serial_handler.h"
 
+#include <chrono>
+
 SerialHandler::SerialHandler(ros::NodeHandle &n)
     : controls_sub_(n.subscribe("/control/control", 1,
                                 &SerialHandler::controlsCallback, this)) {}
@@ -61,6 +63,7 @@ void SerialHandler::sendControls() {
 
 void SerialHandler::controlsCallback(
     const common_msgs::Control::ConstPtr &msg) {
+  auto start = std::chrono::high_resolution_clock::now();
 
   ros::Duration diff = ros::Time::now() - msg->header.stamp;
   ROS_INFO_STREAM("Diff :: " << diff);
@@ -77,6 +80,13 @@ void SerialHandler::controlsCallback(
 
   message_ = ControlMessage{throttle, steering};
   sendControls();
+  auto end = std::chrono::high_resolution_clock::now();
+
+  auto duration =
+      std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+
+  ROS_INFO_STREAM("INTERFACE :: " << (duration.count() * 1e-3)
+                                  << " milliseconds");
 }
 
 int SerialHandler::spin() {

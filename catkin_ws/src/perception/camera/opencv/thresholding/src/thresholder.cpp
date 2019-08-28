@@ -1,5 +1,7 @@
 #include "thresholding/thresholder.h"
 
+#include <chrono>
+
 Thresholder::Thresholder(ros::NodeHandle &n) {
   std::string image_topic, cone_topic;
   n.param<std::string>("image_topic", image_topic, "image_data_raw");
@@ -16,6 +18,8 @@ Thresholder::Thresholder(ros::NodeHandle &n) {
 }
 
 void Thresholder::imageCallback(const sensor_msgs::Image::ConstPtr &msg) {
+  auto start = std::chrono::high_resolution_clock::now();
+
   // Get pointer to cv image
   cv_bridge::CvImagePtr cv_ptr;
   try {
@@ -78,6 +82,13 @@ void Thresholder::imageCallback(const sensor_msgs::Image::ConstPtr &msg) {
   cone_pub_.publish(*cv_ptr->toImageMsg());
 
   cv::waitKey(1);
+  auto end = std::chrono::high_resolution_clock::now();
+
+  auto duration =
+      std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+
+  ROS_INFO_STREAM("PERCEPTION :: " << (duration.count() * 1e-3)
+                                   << " milliseconds");
 }
 
 std::vector<cv::Rect> Thresholder::Threshold(cv_bridge::CvImagePtr &cv_ptr,

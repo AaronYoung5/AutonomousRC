@@ -20,7 +20,7 @@ void callback(const common_msgs::Control::ConstPtr &msg) {
 }
 
 int main(int argc, char **argv) {
-  ros::init(argc, argv, "arduino_interface_test");
+  ros::init(argc, argv, "arduino_interface_time_tester");
   ros::NodeHandle n;
 
   minimum = ros::Time::now();
