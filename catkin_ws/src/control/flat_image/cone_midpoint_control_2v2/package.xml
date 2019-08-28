@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<package format="2">
+  <name>cone_midpoint_control_2v2</name>
+  <version>0.0.0</version>
+  <description>
+    cone_midpoint_control_2v2 package
+  </description>
+
+  <license>TODO</license>
+  <author>TODO</author>
+  <maintainer email="TODO@TODO.com">TODO</maintainer>
+
+  <depend>common_msgs</depend>
+  <depend>perception_msgs</depend>
+  <depend>control_utilities</depend>
+  <depend>common_utilities</depend>
+
+  <buildtool_depend>catkin</buildtool_depend>
+</package>

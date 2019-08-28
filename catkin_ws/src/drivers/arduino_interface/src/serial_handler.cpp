@@ -65,8 +65,8 @@ void SerialHandler::controlsCallback(
     const common_msgs::Control::ConstPtr &msg) {
   auto start = std::chrono::high_resolution_clock::now();
 
-  ros::Duration diff = ros::Time::now() - msg->header.stamp;
-  ROS_INFO_STREAM("Diff :: " << diff);
+  // ros::Duration diff = ros::Time::now() - msg->header.stamp;
+  // ROS_INFO_STREAM("Diff :: " << diff);
 
   // Get controls
   int8_t throttle = msg->throttle * 100;
@@ -75,8 +75,8 @@ void SerialHandler::controlsCallback(
   // Clamp controls
   int max_throttle = 11;
   throttle = throttle > max_throttle ? max_throttle : throttle;
-  if (abs(steering * 1.5) < 100)
-    steering *= 1.5;
+//  if (abs(steering * 1.5) < 100)
+    // steering *= 1.5;
 
   message_ = ControlMessage{throttle, steering};
   sendControls();

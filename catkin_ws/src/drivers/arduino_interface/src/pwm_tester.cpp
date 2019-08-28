@@ -56,8 +56,8 @@ public:
     sendControls(0);
   }
 
-  void sendControls(int8_t steering) {
-    message_ = ControlMessage{0, steering};
+  void sendControls(int steering) {
+    message_ = ControlMessage{0, (int8_t)steering};
     uint8_t size = sizeof(message_);
     uint8_t buffer[size + sizeof(uint8_t)];
     memcpy(buffer + sizeof(uint8_t), &message_, size);
@@ -88,9 +88,10 @@ public:
         std::string msg = serial_.readline();
         std::cout << "Data Received :: " << msg << std::endl;
       }
-      int8_t steering;
+      int steering;
       std::cin >> steering;
       sendControls(steering);
+      ros::Duration(0.5).sleep();
     }
     sendControls(0);
     return 0;
