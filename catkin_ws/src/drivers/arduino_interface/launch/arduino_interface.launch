@@ -2,9 +2,12 @@
 
   <arg name="simulating" default="false"/>
   <arg name="bag_file" default="false"/>
+  <arg name="keyboard" default="false"/>
+  <arg name="wheel" default="false"/>
+  <arg name="time_tester" default="false"/>
+  <arg name="pwm_tester" default="false"/>
 
-  <group ns="arduino" if="$(eval not simulating and not bag_file)">
-    <arg name="keyboard" default="false"/>
+  <group ns="arduino" if="$(eval not simulating and not bag_file and not (time_tester or pwm_tester))">
 
     <node pkg="arduino_interface" type="arduino_interface" name="arduino_interface" output="screen" required="true" respawn="false"/>
 
@@ -15,7 +18,11 @@
     </group>
   </group>
 
-  <group if="$(eval not simulating and bag_file)">
-    <node pkg="arduino_interface" type="arduino_interface_test" name="arduino_interface_test" output="screen" required="true" respawn="false"/>
+  <group if="$(eval time_tester)">
+    <node pkg="arduino_interface" type="arduino_interface_time_tester" name="arduino_interface_time_tester" output="screen" required="true" respawn="false"/>
+  </group>
+
+  <group if="$(eval pwm_tester)">
+    <node pkg="arduino_interface" type="arduino_interface_pwm_tester" name="arduino_interface_pwm_tester" output="screen" required="true" respawn="false"/>
   </group>
 </launch>
