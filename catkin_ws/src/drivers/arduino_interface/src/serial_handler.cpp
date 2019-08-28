@@ -1,12 +1,20 @@
 #include "arduino_interface/serial_handler.h"
 
 #include <chrono>
+#include <thread>
 
 SerialHandler::SerialHandler(ros::NodeHandle &n)
     : controls_sub_(n.subscribe("/control/control", 1,
-                                &SerialHandler::controlsCallback, this)) {}
+                                &SerialHandler::controlsCallback, this)) {
+  if (thread_.joinable())
+    thread_.join();
+}
 
-SerialHandler::~SerialHandler() { serial_.close(); }
+SerialHandler::~SerialHandler() {
+  serial_.close();
+  if (thread_.joinable())
+    thread_.join();
+}
 
 int SerialHandler::initSerial() {
   try {
@@ -75,17 +83,28 @@ void SerialHandler::controlsCallback(
   // Clamp controls
   int max_throttle = 11;
   throttle = throttle > max_throttle ? max_throttle : throttle;
-//  if (abs(steering * 1.5) < 100)
-    // steering *= 1.5;
+  //  if (abs(steering * 1.5) < 100)
+  // steering *= 1.5;
 
   message_ = ControlMessage{throttle, steering};
+
+  // if (thread_.joinable())
+    // thread_.join();
+
+  // std::thread thr([&] {
+    // mutex_.lock();
+    // sendControls();
+    // mutex_.unlock();
+  // });
+  // thread_ = std::move(thr);
+
   sendControls();
   auto end = std::chrono::high_resolution_clock::now();
 
   auto duration =
       std::chrono::duration_cast<std::chrono::microseconds>(end - start);
 
-  ROS_INFO_STREAM("INTERFACE :: " << (duration.count() * 1e-3)
+  ROS_DEBUG_STREAM("INTERFACE :: " << (duration.count() * 1e-3)
                                   << " milliseconds");
 }
 

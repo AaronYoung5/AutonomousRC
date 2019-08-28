@@ -14,6 +14,8 @@ add_message_files(
   FILES
   Cone.msg
   ConeImageMap.msg
+  ConeXY.msg
+  ConeDepthMap.msg
 )
 
 generate_messages(

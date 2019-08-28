@@ -87,7 +87,7 @@ void Thresholder::imageCallback(const sensor_msgs::Image::ConstPtr &msg) {
   auto duration =
       std::chrono::duration_cast<std::chrono::microseconds>(end - start);
 
-  ROS_INFO_STREAM("PERCEPTION :: " << (duration.count() * 1e-3)
+  ROS_DEBUG_STREAM("PERCEPTION :: " << (duration.count() * 1e-3)
                                    << " milliseconds");
 }
 

@@ -7,11 +7,17 @@
 // External packages
 #include "serial/serial.h"
 
+#include <thread>
+#include <mutex>
+
 class SerialHandler {
 private:
   serial::Serial serial_;
 
   ros::Subscriber controls_sub_;
+
+  std::thread thread_;
+  std::mutex mutex_;
 
   enum AckType : uint8_t { OK, NOT_OK };
 

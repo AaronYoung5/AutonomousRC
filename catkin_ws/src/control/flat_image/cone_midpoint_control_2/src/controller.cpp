@@ -171,6 +171,6 @@ void Controller::imageCallback(
   auto duration =
       std::chrono::duration_cast<std::chrono::microseconds>(end - start);
 
-  ROS_INFO_STREAM("CONTROL :: " << (duration.count() * 1e-3)
+  ROS_DEBUG_STREAM("CONTROL :: " << (duration.count() * 1e-3)
                                 << " milliseconds");
 }
