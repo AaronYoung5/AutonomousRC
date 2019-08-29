@@ -59,6 +59,7 @@ void Controller::imageCallback(
       control.steering = (destination.x() - center.x()) / center.x();
        //control.throttle = .15-0.04*abs(control.steering);
       control.throttle = 0.11;
+      // control.throttle = .2-0.07*abs(control.steering);
     }
   } else if (red_cones.size() > 1 && green_cones.size() > 1) {
     //   // finding lower left green cone
@@ -140,6 +141,7 @@ void Controller::imageCallback(
 
       //control.throttle = .15-0.04*abs(control.steering);
       control.throttle = 0.11;
+      // control.throttle = .2-0.07*abs(control.steering);
     }
   }
 

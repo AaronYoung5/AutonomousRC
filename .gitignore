@@ -3,5 +3,5 @@
 **/build_isolated
 **/devel_isolated
 *.output
-*.bag
+# *.bag
 CATKIN_IGNORE*

@@ -11,8 +11,7 @@
   <maintainer email="TODO@TODO.com">TODO</maintainer>
 
   <depend>perception_msgs</depend>
-  <depend>visualization_msgs</depend>
-  <depend>common_utilities</depend>
+  <depend>image_transport</depend>
 
   <buildtool_depend>catkin</buildtool_depend>
 </package>

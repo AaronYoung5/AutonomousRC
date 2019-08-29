@@ -104,7 +104,7 @@ void SerialHandler::controlsCallback(
   auto duration =
       std::chrono::duration_cast<std::chrono::microseconds>(end - start);
 
-  ROS_INFO_STREAM("INTERFACE :: " << (duration.count() * 1e-3)
+  ROS_DEBUG_STREAM("INTERFACE :: " << (duration.count() * 1e-3)
                                   << " milliseconds");
 }
 
