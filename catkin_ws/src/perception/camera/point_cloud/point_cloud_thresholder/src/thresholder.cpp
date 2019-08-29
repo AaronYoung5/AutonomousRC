@@ -2,8 +2,8 @@
 
 PointCloudThresholder::PointCloudThresholder() {}
 
-sensor_msgs::PointCloud2 &PointCloudThresholder::Threshold(
-    const sensor_msgs::PointCloud2::ConstPtr &msg) {
+pcl::PCLPointCloud2 &
+PointCloudThresholder::Threshold(const pcl::PCLPointCloud2::ConstPtr &msg) {
   std::vector<uint8_t> points;
 
   ColorRange green(Color(20, 120, 0), Color(200, 255, 50));
@@ -16,20 +16,20 @@ sensor_msgs::PointCloud2 &PointCloudThresholder::Threshold(
 
     Color point_color(msg->data[i], msg->data[i + 1], msg->data[i + 2]);
 
-    if (green.WithinRange(point_color) || red.WithinRange(point_color)) {
 
+    if (green.WithinRange(point_color) || red.WithinRange(point_color)) {
       points.insert(points.end(), &msg->data[i - color_offset],
                     &msg->data[i + 4]);
     }
-
-    thresholded_msg_ = sensor_msgs::PointCloud2();
-    createPointCloud2(points);
-    return thresholded_msg_;
   }
+
+  thresholded_msg_.data.resize(0);
+  createPointCloud2(points);
+  return thresholded_msg_;
 }
 
 void PointCloudThresholder::createPointCloud2(std::vector<uint8_t> &points) {
-  thresholded_msg_.header.stamp = ros::Time::now();
+  pcl_conversions::toPCL(ros::Time::now(), thresholded_msg_.header.stamp);
   thresholded_msg_.header.frame_id = "zed_left_camera_frame";
 
   // Convert x/y/z to fields
@@ -42,7 +42,7 @@ void PointCloudThresholder::createPointCloud2(std::vector<uint8_t> &points) {
   int offset = 0;
   for (size_t d = 0; d < thresholded_msg_.fields.size(); d++, offset += 4) {
     thresholded_msg_.fields[d].offset = offset;
-    thresholded_msg_.fields[d].datatype = sensor_msgs::PointField::FLOAT32;
+    thresholded_msg_.fields[d].datatype = pcl::PCLPointField::FLOAT32;
     thresholded_msg_.fields[d].count = 1;
   }
 

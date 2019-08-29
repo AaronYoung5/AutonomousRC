@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <package format="2">
-  <name>point_cloud_threshold_and_cluster</name>
+  <name>point_cloud_thresholder</name>
   <version>0.0.0</version>
   <description>
-    point_cloud_threshold_and_cluster package
+    point_cloud_thresholder package
   </description>
 
   <license>TODO</license>
@@ -11,10 +11,8 @@
   <maintainer email="TODO@TODO.com">TODO</maintainer>
 
   <depend>perception_msgs</depend>
+  <depend>visualization_msgs</depend>
   <depend>common_utilities</depend>
 
   <buildtool_depend>catkin</buildtool_depend>
-
-  <build_depend>libpcl-all-dev</build_depend>
-  <exec_depend>libpcl-all</exec_depend>
 </package>

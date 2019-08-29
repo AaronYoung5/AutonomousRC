@@ -1,5 +1,7 @@
 #pragma once
 
+#include <iostream>
+
 namespace common_utilities {
 class Color {
 private:
@@ -14,6 +16,10 @@ public:
   uint8_t &r() { return r_; }
   uint8_t &g() { return g_; }
   uint8_t &b() { return b_; }
+
+  void print() {
+    std::cout << "(" << (int)r_ << ", " << (int)g_ << ", " << (int)b_ << ")" << std::endl;
+  }
 };
 
 class ColorRange {
