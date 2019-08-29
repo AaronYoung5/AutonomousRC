@@ -9,7 +9,8 @@ Controller::Controller(ros::NodeHandle &n) {
   sub_ = n.subscribe(cone_topic, 1, &Controller::imageCallback, this);
 }
 
-void Controller::imageCallback(const perception_msgs::ConeImageMap::ConstPtr &msg) {
+void Controller::imageCallback(
+    const perception_msgs::ConeImageMap::ConstPtr &msg) {
   common_msgs::Control control;
   int height = msg->height;
   int width = msg->width;
@@ -21,7 +22,8 @@ void Controller::imageCallback(const perception_msgs::ConeImageMap::ConstPtr &ms
     control.throttle = 0;
     control.steering = 0;
     control.braking = 1;
-  }else if ((red_cones.size() == 1 || green_cones.size() == 1)&&(red_cones.size()>1||green_cones.size()>1)) {
+  } else if ((red_cones.size() == 1 || green_cones.size() == 1) &&
+             (red_cones.size() > 1 || green_cones.size() > 1)) {
     Vec2<> avgG1((green_cones[0].tl.x + green_cones[0].br.x) / 2,
                  (green_cones[0].tl.y + green_cones[0].br.y) / 2);
     for (int i = 1; i < green_cones.size(); i++) {
@@ -42,24 +44,23 @@ void Controller::imageCallback(const perception_msgs::ConeImageMap::ConstPtr &ms
       }
     }
     bool go = true;
-    if(abs(avgR1.y()-avgG1.y())>height*0.4){
-	    if(avgR1.y()>avgG1.y()){
-		    green_cones = {};
-		    go = false;
-	    }
-	    else{
-		   red_cones = {};
-		   go = false;
-	    } 
+    if (abs(avgR1.y() - avgG1.y()) > height * 0.25) {
+      if (avgR1.y() > avgG1.y()) {
+        green_cones = {};
+        go = false;
+      } else {
+        red_cones = {};
+        go = false;
+      }
     }
-    if(go){
-    	Vec2<> destination((avgR1 + avgG1) / 2);
-    	Vec2<> center(width / 2, height / 2);
-    	control.steering = (destination.x() - center.x()) / center.x();
-   	// control.throttle = .2-0.07*abs(control.steering);
-   	control.throttle = 0.13;
+    if (go) {
+      Vec2<> destination((avgR1 + avgG1) / 2);
+      Vec2<> center(width / 2, height / 2);
+      control.steering = (destination.x() - center.x()) / center.x();
+       //control.throttle = .15-0.04*abs(control.steering);
+      control.throttle = 0.11;
     }
-  } else if (red_cones.size()>1&&green_cones.size()>1) {
+  } else if (red_cones.size() > 1 && green_cones.size() > 1) {
     //   // finding lower left green cone
     Vec2<> avgG1((green_cones[0].tl.x + green_cones[0].br.x) / 2,
                  (green_cones[0].tl.y + green_cones[0].br.y) / 2);
@@ -110,73 +111,79 @@ void Controller::imageCallback(const perception_msgs::ConeImageMap::ConstPtr &ms
       }
     }
     bool go = true;
-    if(abs(avgR1.y()-avgG1.y()>height*0.4)){
-		    if(avgR1.y()>avgG1.y()){
-			green_cones = {};
-			go = false;
-		    } else{
-	   		 red_cones = {};
-	    		 go = false;
-			 
-    		   }
+    if (abs(avgR1.y() - avgG1.y() > height * 0.25)) {
+      if (avgR1.y() > avgG1.y()) {
+        green_cones = {};
+        go = false;
+      } else {
+        red_cones = {};
+        go = false;
+      }
     }
-    if(go){
-    	// weighted average for G1/G2 and R1/R2 x coordinates
-    	int xPositionDestination =((int)( (float)avgG1.x() * 0.25 + (float)avgG2.x() * 0.75)+(int)((float)avgR1.x() * 0.25 + (float)avgR2.x() * 0.75))/2;
-    	// setting destination
-    	Vec2<> destination(xPositionDestination,0);
-    	// checking buffer for destination with G1&R1
-  	if (destination.x() < avgR1.x() + 0.05 * width)
- 	destination.x() = avgR1.x() + 0.05 * width;
-   	else if (destination.x() > avgG1.x() - 0.05 * width)
-      	destination.x() = avgG1.x() - 0.05 * width;
-    	// finding center
-   	Vec2<> center(width / 2, height / 2);
-    	// setting steering
-    	control.steering = (destination.x() - center.x()) / (float)center.x();
+    if (go) {
+      // weighted average for G1/G2 and R1/R2 x coordinates
+      int xPositionDestination =
+          ((int)((float)avgG1.x() * 0.25 + (float)avgG2.x() * 0.75) +
+           (int)((float)avgR1.x() * 0.25 + (float)avgR2.x() * 0.75)) /
+          2;
+      // setting destination
+      Vec2<> destination(xPositionDestination, 0);
+      // checking buffer for destination with G1&R1
+      if (destination.x() < avgR1.x() + 0.05 * width)
+        destination.x() = avgR1.x() + 0.05 * width;
+      else if (destination.x() > avgG1.x() - 0.05 * width)
+        destination.x() = avgG1.x() - 0.05 * width;
+      // finding center
+      Vec2<> center(width / 2, height / 2);
+      // setting steering
+      control.steering = (destination.x() - center.x()) / (float)center.x();
 
-    	//control.throttle = .2-0.07*abs(control.steering);
-    	control.throttle = 0.13;
-  }
+      //control.throttle = .15-0.04*abs(control.steering);
+      control.throttle = 0.11;
+    }
   }
 
-if (red_cones.size()==0){
-	  control.throttle = 0.13;
-	  Vec2<> lowestCone ((green_cones[0].tl.x+green_cones[0].br.x)/2,(green_cones[0].tl.y+green_cones[0].br.y)/2);
-	  for(int i=0;i<green_cones.size();i++){
-		Vec2<> hold((green_cones[i].tl.x+green_cones[i].br.x)/2,(green_cones[0].tl.y+green_cones[0].br.y)/2);
-		if(hold.y()>lowestCone.y()){
-			lowestCone = hold;
-		}
-	  }
-	  if(lowestCone.y()>=width-lowestCone.x()){
-		 control.steering = -0.6;
-	  }
-	  else if ((lowestCone.x()-width)*(lowestCone.x()-width)+(lowestCone.y()-height)*(lowestCone.y()-height)<=height*height){
-		control.steering = -0.45;
-	  }
-	  else{
-		  control.steering = -.3;
-	  }
-  }else if (green_cones.size()==0){
-	control.throttle = 0.13;
-	Vec2<> lowestCone ((red_cones[0].tl.x+red_cones[0].br.x)/2,(red_cones[0].tl.y+red_cones[0].br.y)/2);
-	for(int i=0;i<red_cones.size();i++){
-		Vec2<> hold((red_cones[i].tl.x+red_cones[i].br.x)/2,(red_cones[i].tl.y+red_cones[i].br.y)/2);
-		if(hold.y()>lowestCone.y()){
-			lowestCone = hold;
-		}
-	}
-	if(lowestCone.y()>lowestCone.x()){
-		control.steering = 0.6;
-	}
-	else if (lowestCone.x()*lowestCone.x()+(lowestCone.y()-height)*(lowestCone.y()-height)<=height*height){
-		control.steering = 0.45;
-	}
-	else{
-		control.steering = 0.3;
-	}
-  } 
+  if (red_cones.size() == 0) {
+    control.throttle = 0.11;
+    Vec2<> lowestCone((green_cones[0].tl.x + green_cones[0].br.x) / 2,
+                      (green_cones[0].tl.y + green_cones[0].br.y) / 2);
+    for (int i = 0; i < green_cones.size(); i++) {
+      Vec2<> hold((green_cones[i].tl.x + green_cones[i].br.x) / 2,
+                  (green_cones[0].tl.y + green_cones[0].br.y) / 2);
+      if (hold.y() > lowestCone.y()) {
+        lowestCone = hold;
+      }
+    }
+    if (lowestCone.y() >= width - lowestCone.x()) {
+      control.steering = -1.0;
+    } else if ((lowestCone.x() - width) * (lowestCone.x() - width) +
+                   (lowestCone.y() - height) * (lowestCone.y() - height) <=
+               height * height) {
+      control.steering = -0.6;
+    } else {
+      control.steering = -.3;
+    }
+  } else if (green_cones.size() == 0) {
+    control.throttle = 0.11;
+    Vec2<> lowestCone((red_cones[0].tl.x + red_cones[0].br.x) / 2,
+                      (red_cones[0].tl.y + red_cones[0].br.y) / 2);
+    for (int i = 0; i < red_cones.size(); i++) {
+      Vec2<> hold((red_cones[i].tl.x + red_cones[i].br.x) / 2,
+                  (red_cones[i].tl.y + red_cones[i].br.y) / 2);
+      if (hold.y() > lowestCone.y()) {
+        lowestCone = hold;
+      }
+    }
+    if (lowestCone.y() > lowestCone.x()) {
+      control.steering = 1.0;
+    } else if (lowestCone.x() * lowestCone.x() +
+                   (lowestCone.y() - height) * (lowestCone.y() - height) <=
+               height * height) {
+      control.steering = 0.6;
+    } else {
+      control.steering = 0.3;
+    }
+  }
 
   clamp(control);
   control.header = msg->header;

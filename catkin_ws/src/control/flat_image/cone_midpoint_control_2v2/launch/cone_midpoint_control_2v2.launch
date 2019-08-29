@@ -1,0 +1,42 @@
+<launch>
+  <arg name="record_cam" default="false"/>
+  <arg name="record_pc" default="false"/>
+  <arg name="record_control" default="false"/>
+  <!-- Control topic to publish to -->
+  <arg name="control_topic" default="/control/control"/>
+  <param name="/control_topic" value="/control/control"/>
+  <!-- Cone topic to subscribe to -->
+  <arg name="cone_topic" default="/perception/cone_image_map"/>
+  <!-- Use simulated sensors -->
+  <arg name="simulating" default="true"/>
+  <!-- Display cone recognition -->
+  <arg name="display" default="false"/>
+  <!-- Use bag file -->
+  <arg name="bag_file" default="false"/>
+  <!-- Use arduino -->
+  <arg name="use_arduino" default="true"/>
+  <include file="$(find arduino_interface)/launch/arduino_interface.launch">
+    <arg name="simulating" value="$(arg simulating)"/>
+    <arg name="bag_file" value="$(arg bag_file)"/>
+    <arg name="use_arduino" value="$(arg use_arduino)"/>
+  </include>
+  <!-- Include thresholding launch file -->
+  <include file="$(find thresholding)/launch/thresholding.launch">
+    <arg name="simulating" value="$(arg simulating)"/>
+    <arg name="cone_topic" value="$(arg cone_topic)"/>
+    <arg name="bag_file" value="$(arg bag_file)"/>
+    <arg name="display" value="$(arg display)"/>
+  </include>
+  <group ns="control">
+    <group ns="flat_image">
+      <!-- Launch control node -->
+      <node pkg="cone_midpoint_control_2v2" type="cone_midpoint_control_2v2" name="cone_midpoint_control_2v2" output="screen" required="true">
+        <param name="control_topic" value="$(arg control_topic)"/>
+        <param name="cone_topic" value="$(arg cone_topic)"/>
+      </node>
+    </group>
+  </group>
+  <node pkg="rosbag" type="record" name="rosbag_record_cam" if="$(arg record_cam)" args="record /sensor_data/raw_data/camera -o /home/sbel/rosbag_files/cam_thresholding"/>
+  <node pkg="rosbag" type="record" name="rosbag_record_pc" if="$(arg record_pc)" args="record /zed/zed_node/point_cloud/cloud_registered -o /home/sbel/rosbag_files/pc_thresholding"/>
+  <node pkg="rosbag" type="record" name="rosbag_record_cam" if="$(arg record_cam)" args="record /control/control -o /home/sbel/rosbag_files/control_thresholding"/>
+</launch>
