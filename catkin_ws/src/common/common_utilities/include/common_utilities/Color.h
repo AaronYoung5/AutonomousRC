@@ -18,7 +18,8 @@ public:
   uint8_t &b() { return b_; }
 
   void print() {
-    std::cout << "(" << (int)r_ << ", " << (int)g_ << ", " << (int)b_ << ")" << std::endl;
+    std::cout << "(" << (int)r_ << ", " << (int)g_ << ", " << (int)b_ << ")"
+              << std::endl;
   }
 };
 
@@ -28,6 +29,9 @@ private:
 
 public:
   ColorRange(Color min, Color max) : min_(min), max_(max) {}
+
+  Color &min() { return min_; }
+  Color &max() { return max_; }
 
   bool WithinRange(Color &other) {
     return other.r() > min_.r() && other.r() < max_.r() &&

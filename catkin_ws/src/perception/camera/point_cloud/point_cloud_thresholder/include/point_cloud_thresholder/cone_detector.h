@@ -12,6 +12,8 @@
 #include "visualization_msgs/Marker.h"
 #include "visualization_msgs/MarkerArray.h"
 
+#include <rviz_visual_tools/rviz_visual_tools.h>
+
 class PointCloudConeDetector {
 private:
   ros::Publisher pub_;
@@ -22,13 +24,17 @@ private:
   PointCloudThresholder thresholder_;
   PointCloudClusterer clusterer_;
 
-  bool image_display_, image_simulated_;
+  bool visualize_, image_simulated_;
 
   int max_markers_;
+
+  // For visualizing things in rviz
+rviz_visual_tools::RvizVisualToolsPtr visual_tools_;
 
 public:
   PointCloudConeDetector(ros::NodeHandle &n);
 
 private:
   void cloudCallback(const pcl::PCLPointCloud2::ConstPtr &msg);
+  void visualizeCones(perception_msgs::ConeDepthMap &cone_map);
 };

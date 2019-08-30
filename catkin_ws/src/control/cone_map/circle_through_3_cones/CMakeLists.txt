@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(cone_midpoint_control_2)
+project(circle_through_3_cones)
 
 find_package(catkin REQUIRED COMPONENTS
 	roscpp
@@ -10,7 +10,7 @@ find_package(catkin REQUIRED COMPONENTS
 )
 
 include_directories(
-  ${catkin)INCLUDE_DIRS}
+  ${catkin_INCLUDE_DIRS}
   include
 )
 
@@ -19,5 +19,5 @@ catkin_package(
 )
 
 add_executable(circle_through_3_cones src/main.cpp src/controller.cpp)
-target_lin_libraries(circle_through_3_cones ${catkin_LIBRARIES})
+target_link_libraries(circle_through_3_cones ${catkin_LIBRARIES})
 add_dependencies(circle_through_3_cones ${catkin_EXPORTED_TARGETS})

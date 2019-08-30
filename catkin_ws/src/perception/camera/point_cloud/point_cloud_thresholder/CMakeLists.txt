@@ -6,6 +6,7 @@ find_package(catkin REQUIRED COMPONENTS
   perception_msgs
   common_utilities
   visualization_msgs
+  rviz_visual_tools
 )
 
 find_package(PCL 1.2 REQUIRED)

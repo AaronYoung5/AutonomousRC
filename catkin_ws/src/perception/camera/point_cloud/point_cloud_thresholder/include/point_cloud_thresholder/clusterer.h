@@ -6,11 +6,9 @@
 #include "perception_msgs/ConeDepthMap.h"
 
 class PointCloudClusterer {
-private:
-  perception_msgs::ConeDepthMap map_;
-
 public:
   PointCloudClusterer();
 
-  perception_msgs::ConeDepthMap &Cluster(pcl::PCLPointCloud2 &msg);
+  void Cluster(perception_msgs::ConeDepthMap &depth_map,
+               pcl::PCLPointCloud2::Ptr &msg);
 };

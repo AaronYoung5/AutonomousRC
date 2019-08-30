@@ -2,8 +2,10 @@
 
 #include <thread>
 
+#include <math.h>
 #include <pcl/ModelCoefficients.h>
 #include <pcl/common/centroid.h>
+#include <pcl/common/transforms.h>
 #include <pcl/console/time.h>
 #include <pcl/features/normal_3d.h>
 #include <pcl/filters/extract_indices.h>
@@ -17,34 +19,49 @@
 #include <pcl/segmentation/sac_segmentation.h>
 #include <pcl/visualization/cloud_viewer.h>
 
+typedef pcl::PointXYZRGBA PointType;
+
 PointCloudClusterer::PointCloudClusterer() {}
 
-perception_msgs::ConeDepthMap &
-PointCloudClusterer::Cluster(pcl::PCLPointCloud2 &msg) {
-  // Convert the pcl/PCLPointCloud2 data to pcl/PointCloud
-  pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud(
-      new pcl::PointCloud<pcl::PointXYZRGB>),
-      cloud_f(new pcl::PointCloud<pcl::PointXYZRGB>);
-  pcl::fromPCLPointCloud2(msg, *cloud);
+void PointCloudClusterer::Cluster(perception_msgs::ConeDepthMap &depth_map,
+                                  pcl::PCLPointCloud2::Ptr &msg) {
+  if (msg->width == 0) {
+    return;
+  }
 
-  pcl::console::TicToc tt;
-  std::cerr << "Starting...\n", tt.tic();
+  // Convert the pcl/PCLPointCloud2 data to pcl/PointCloud
+  pcl::PointCloud<PointType>::Ptr cloud_in(new pcl::PointCloud<PointType>),
+      cloud(new pcl::PointCloud<PointType>),
+      cloud_f(new pcl::PointCloud<PointType>);
+  pcl::fromPCLPointCloud2(*msg, *cloud);
+
+  // Eigen::Vector3f rotation_vector;
+  // rotation_vector << 0, 1, 0;
+  //
+  // float theta = M_PI / 9;
+  //
+  // Eigen::Affine3f transform_2 = Eigen::Affine3f::Identity();
+  // transform_2.translation() << 0, 0, 0;
+  // transform_2.rotate(Eigen::AngleAxisf(theta, rotation_vector));
+  // pcl::transformPointCloud(*cloud_in, *cloud, transform_2);
+
+  // pcl::console::TicToc tt;
+  // std::cerr << "Starting...\n", tt.tic();
 
   // Create the filtering object: downsample the dataset using a leaf size of
   // 1cm
-  pcl::VoxelGrid<pcl::PointXYZRGB> vg;
-  pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud_filtered(
-      new pcl::PointCloud<pcl::PointXYZRGB>);
+  pcl::VoxelGrid<PointType> vg;
+  pcl::PointCloud<PointType>::Ptr cloud_filtered(
+      new pcl::PointCloud<PointType>);
   vg.setInputCloud(cloud);
   vg.setLeafSize(0.01f, 0.01f, 0.01f);
   vg.filter(*cloud_filtered);
   // std::cout << "PointCloud after filtering has: "
-            // << cloud_filtered->points.size() << " data points."
-            // << std::endl; //*
+  // << cloud_filtered->points.size() << " data points."
+  // << std::endl; //*
 
   pcl::PointIndices::Ptr inliers(new pcl::PointIndices);
-  pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud_plane(
-      new pcl::PointCloud<pcl::PointXYZRGB>());
+  pcl::PointCloud<PointType>::Ptr cloud_plane(new pcl::PointCloud<PointType>());
 
   int i = 0, nr_points = (int)cloud_filtered->points.size();
   while (cloud_filtered->points.size() > 0.3 * nr_points) {
@@ -53,7 +70,7 @@ PointCloudClusterer::Cluster(pcl::PCLPointCloud2 &msg) {
     }
 
     // Extract the planar inliers from the input cloud
-    pcl::ExtractIndices<pcl::PointXYZRGB> extract;
+    pcl::ExtractIndices<PointType> extract;
     extract.setInputCloud(cloud_filtered);
     extract.setIndices(inliers);
     extract.setNegative(false);
@@ -68,14 +85,13 @@ PointCloudClusterer::Cluster(pcl::PCLPointCloud2 &msg) {
   }
 
   // Creating the KdTree object for the search method of the extraction
-  pcl::search::KdTree<pcl::PointXYZRGB>::Ptr tree(
-      new pcl::search::KdTree<pcl::PointXYZRGB>);
+  pcl::search::KdTree<PointType>::Ptr tree(new pcl::search::KdTree<PointType>);
   tree->setInputCloud(cloud_filtered);
 
   std::vector<pcl::PointIndices> cluster_indices;
-  pcl::EuclideanClusterExtraction<pcl::PointXYZRGB> ec;
+  pcl::EuclideanClusterExtraction<PointType> ec;
   ec.setClusterTolerance(.05); // 2cm
-  ec.setMinClusterSize(40);
+  ec.setMinClusterSize(25);
   ec.setMaxClusterSize(10000);
   ec.setSearchMethod(tree);
   ec.setInputCloud(cloud_filtered);
@@ -85,25 +101,41 @@ PointCloudClusterer::Cluster(pcl::PCLPointCloud2 &msg) {
   // << std::endl;
 
   int j = 0;
-  map_.red_cones.resize(0);
   for (std::vector<pcl::PointIndices>::const_iterator it =
            cluster_indices.begin();
        it != cluster_indices.end(); ++it) {
+    pcl::PointCloud<PointType>::Ptr cloud_cluster(
+        new pcl::PointCloud<PointType>);
+    bool is_green;
+    for (std::vector<int>::const_iterator pit = it->indices.begin();
+         pit != it->indices.end(); ++pit) {
+      is_green =
+          cloud_filtered->points[*pit].a == perception_msgs::ConeXY::GREEN;
+      cloud_cluster->points.push_back(cloud_filtered->points[*pit]); //*
+    }
+    cloud_cluster->width = cloud_cluster->points.size();
+    cloud_cluster->height = 1;
+    cloud_cluster->is_dense = true;
+
     // Find centroid
     Eigen::Vector4f centroid;
     pcl::compute3DCentroid(*cloud_cluster, centroid);
     // cout << centroid[0] << " " << centroid[1] << " " << centroid[2] << " "
-         // << centroid[3] << " \n";
+    // << centroid[3] << " \n";
 
     perception_msgs::ConeXY cone;
     cone.pos.x = centroid[0];
     cone.pos.y = centroid[1];
     cone.pos.z = centroid[2];
-    map_.red_cones.push_back(cone);
+    if (is_green) {
+      cone.color = perception_msgs::ConeXY::GREEN;
+      depth_map.green_cones.push_back(cone);
+    } else {
+      cone.color = perception_msgs::ConeXY::RED;
+      depth_map.red_cones.push_back(cone);
+    }
   }
 
-  std::cerr << ">> Done: " << tt.toc() << " ms, " << cluster_indices.size()
-            << " clusters found\n";
-
-  return map_;
+  // std::cerr << ">> Done: " << tt.toc() << " ms, " << cluster_indices.size()
+  // << " clusters found\n";
 }
