@@ -37,6 +37,6 @@
     </group>
   </group>
   <node pkg="rosbag" type="record" name="rosbag_record_cam" if="$(arg record_cam)" args="record /sensor_data/raw_data/camera -o /home/sbel/rosbag_files/cam_thresholding"/>
-  <node pkg="rosbag" type="record" name="rosbag_record_pc" if="$(arg record_pc)" args="record /zed/zed_node/point_cloud/cloud_registered -o /home/sbel/rosbag_files/pc_thresholding"/>
-  <node pkg="rosbag" type="record" name="rosbag_record_cam" if="$(arg record_cam)" args="record /control/control -o /home/sbel/rosbag_files/control_thresholding"/>
+  <node pkg="rosbag" type="record" name="rosbag_record_pc" if="$(arg record_pc)" args="record /sensor_data/raw_data/point_cloud -o /home/sbel/rosbag_files/pc_thresholding"/>
+  <node pkg="rosbag" type="record" name="rosbag_record_control" if="$(arg record_control)" args="record /control/control -o /home/sbel/rosbag_files/control_thresholding"/>
 </launch>

@@ -1,6 +1,8 @@
 <launch>
-  <!-- Image topic to subscribe to -->
+  <!-- Point cloud topic to subscribe to -->
   <arg name="cloud_topic" default="/sensor_data/raw_data/point_cloud"/>
+  <!-- Image topic to subscribe to -->
+  <arg name="image_topic" default="/sensor_data/raw_data/camera"/>
   <!-- Cone topic to publish to -->
   <arg name="cone_topic" default="/perception/cone_image_map"/>
   <!-- Use simulated sensors -->
@@ -13,6 +15,7 @@
   <include file="$(find perception_meta)/launch/camera_perception.launch">
     <arg name="simulating" value="$(arg simulating)"/>
     <arg name="cloud_topic" value="$(arg cloud_topic)"/>
+    <arg name="image_topic" value="$(arg image_topic)"/>
     <arg name="bag_file" value="$(arg bag_file)"/>
   </include>
   <group ns="perception">
