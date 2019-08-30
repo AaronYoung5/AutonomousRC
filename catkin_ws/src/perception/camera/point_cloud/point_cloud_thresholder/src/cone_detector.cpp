@@ -4,8 +4,8 @@
 
 PointCloudConeDetector::PointCloudConeDetector(ros::NodeHandle &n)
     : max_markers_(0) {
-  std::string image_topic, cone_topic;
-  n.param<std::string>("image_topic", image_topic,
+  std::string cloud_topic, cone_topic;
+  n.param<std::string>("cloud_topic", cloud_topic,
                        "/zed/zed_node/point_cloud/cloud_registered");
   n.param<std::string>("cone_topic", cone_topic, "cone_image_map");
   n.param("display", visualize_, false);
@@ -13,7 +13,7 @@ PointCloudConeDetector::PointCloudConeDetector(ros::NodeHandle &n)
 
   // subscribe to point cloud feed
   sub_ =
-      n.subscribe(image_topic, 1, &PointCloudConeDetector::cloudCallback, this);
+      n.subscribe(cloud_topic, 1, &PointCloudConeDetector::cloudCallback, this);
 
   pub_ = n.advertise<perception_msgs::ConeDepthMap>(cone_topic, 1);
   cloud_pub_ = n.advertise<pcl::PCLPointCloud2>("thresholded_pc", 1);

@@ -1,5 +1,6 @@
 <launch>
   <arg name="simulating"/>
+  <arg name="cloud_topic" default="cloud_data_raw"/>
   <arg name="image_topic" default="image_data_raw"/>
   <!-- If simulating (i.e. using chrono) -->
   <group if="$(arg simulating)">
@@ -24,6 +25,7 @@
 
     <group ns="zed">
       <remap from="$(arg node_name)/left/image_rect_color" to="$(arg image_topic)"/>
+      <remap from="$(arg node_name)/point_cloud/cloud_registered" to="$(arg cloud_topic)"/>
       <include file="$(find zed_wrapper)/launch/zed_camera.launch">
         <arg name="svo_file" value="$(arg svo_file)"/>
         <arg name="stream" value="$(arg stream)"/>
