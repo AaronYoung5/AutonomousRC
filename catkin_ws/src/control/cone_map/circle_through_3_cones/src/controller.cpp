@@ -4,7 +4,7 @@
 // subscribes to a cone_map topic, publishes to control  topic.
 Controller::Controller(ros::NodeHandle &n) {
   std::string cone_map_topic, control_topic;
-  n.param<std::string>("cone_map_topic", cone_map_topic, "cone_map");
+  n.param<std::string>("cone_topic", cone_map_topic, "cone_map");
   n.param<std::string>("control_topic", control_topic, "control");
 
   pub_ = n.advertise<common_msgs::Control>(control_topic, 1);
