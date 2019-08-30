@@ -81,7 +81,7 @@ void SerialHandler::controlsCallback(
   int8_t steering = msg->steering * 100;
 
   // Clamp controls
-  int max_throttle = 11;
+  int max_throttle = 15;
   throttle = throttle > max_throttle ? max_throttle : throttle;
   //  if (abs(steering * 1.5) < 100)
   // steering *= 1.5;

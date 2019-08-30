@@ -21,6 +21,5 @@ public:
 
 private:
   void mapCallback(const perception_msgs::ConeDepthMap::ConstPtr &msg);
-  std::array<float, 3> calcCircle(Vec2<> p1,Vec2<> p2, Vec2<> p3);
-
+  std::array<float, 3> calcCircle(Vec2<> p1, Vec2<> p2, Vec2<> p3);
 };

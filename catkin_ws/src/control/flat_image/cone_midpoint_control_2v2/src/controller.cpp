@@ -57,8 +57,9 @@ void Controller::imageCallback(
       Vec2<> destination((avgR1 + avgG1) / 2);
       Vec2<> center(width / 2, height / 2);
       control.steering = (destination.x() - center.x()) / center.x();
+       //control.throttle = .15-0.04*abs(control.steering);
+      control.throttle = 0.11;
       // control.throttle = .2-0.07*abs(control.steering);
-      control.throttle = 0.13;
     }
   } else if (red_cones.size() > 1 && green_cones.size() > 1) {
     //   // finding lower left green cone
@@ -138,13 +139,14 @@ void Controller::imageCallback(
       // setting steering
       control.steering = (destination.x() - center.x()) / (float)center.x();
 
+      //control.throttle = .15-0.04*abs(control.steering);
+      control.throttle = 0.11;
       // control.throttle = .2-0.07*abs(control.steering);
-      control.throttle = 0.13;
     }
   }
 
   if (red_cones.size() == 0) {
-    control.throttle = 0.13;
+    control.throttle = 0.11;
     Vec2<> lowestCone((green_cones[0].tl.x + green_cones[0].br.x) / 2,
                       (green_cones[0].tl.y + green_cones[0].br.y) / 2);
     for (int i = 0; i < green_cones.size(); i++) {
@@ -155,16 +157,16 @@ void Controller::imageCallback(
       }
     }
     if (lowestCone.y() >= width - lowestCone.x()) {
-      control.steering = -0.6;
+      control.steering = -1.0;
     } else if ((lowestCone.x() - width) * (lowestCone.x() - width) +
                    (lowestCone.y() - height) * (lowestCone.y() - height) <=
                height * height) {
-      control.steering = -0.45;
+      control.steering = -0.6;
     } else {
       control.steering = -.3;
     }
   } else if (green_cones.size() == 0) {
-    control.throttle = 0.13;
+    control.throttle = 0.11;
     Vec2<> lowestCone((red_cones[0].tl.x + red_cones[0].br.x) / 2,
                       (red_cones[0].tl.y + red_cones[0].br.y) / 2);
     for (int i = 0; i < red_cones.size(); i++) {
@@ -175,11 +177,11 @@ void Controller::imageCallback(
       }
     }
     if (lowestCone.y() > lowestCone.x()) {
-      control.steering = 0.6;
+      control.steering = 1.0;
     } else if (lowestCone.x() * lowestCone.x() +
                    (lowestCone.y() - height) * (lowestCone.y() - height) <=
                height * height) {
-      control.steering = 0.45;
+      control.steering = 0.6;
     } else {
       control.steering = 0.3;
     }
