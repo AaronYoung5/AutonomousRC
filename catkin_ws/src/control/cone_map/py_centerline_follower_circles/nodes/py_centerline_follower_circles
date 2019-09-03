@@ -4,19 +4,22 @@ import rospy
 import numpy as np
 from common_msgs.msg import Control
 from perception_msgs.msg import ConeDepthMap
-# import matplotlib.pyplot as plt
+
+from py_centerline_follower_circles.cubic_spline import Spline2D
+
+import matplotlib.pyplot as plt
 
 pub = rospy.Publisher('/control/control', Control, queue_size=1)
 
-k_steer = -.1 # -.1
-k_throttle = 0.0 # 0.0
-target_distance = .25 #.25
+k_steer = -.4 # -.1
+k_throttle = 0.02 # 0.0
+target_distance = 1.25 #.25
 
 num_markers = 100 #100
 marker_delta = .1 #.1
-buffer_width = .5 #.5
+buffer_width = .25 #.5
 
-throttle = .12 # .11
+throttle = .14 # .11
 
 def callback(data):
     red = np.zeros((len(data.red_cones), 2))
@@ -60,9 +63,18 @@ def create_path(left_cones,right_cones):
 
     left_ordered = order_points(left_cones,buffer_width)
     right_ordered = order_points(right_cones,-buffer_width)
-
+    
     left_markers = create_markers(left_ordered)
     right_markers = create_markers(right_ordered)
+
+    plt.scatter(left_ordered[:, 0], left_ordered[:, 1], c="r")
+    plt.scatter(right_ordered[:, 0], right_ordered[:, 1], c="g")
+
+    plt.plot(left_markers[:, 0], left_markers[:, 1], c="r")
+    plt.plot(right_markers[:, 0], right_markers[:, 1], c="g")
+
+    plt.show()
+    plt.pause(.1)
 
     center_markers = create_middle(left_markers,right_markers)
 
@@ -77,15 +89,17 @@ def create_path(left_cones,right_cones):
     if(abs(normal[0]) > .001):
         radius = cord_pt[1] + normal[1] * (-cord_pt[0] / normal[0])
 
+    # steer = k_steer * np.arcsin(np.clip(.48/radius, -1, 1))/0.32
     steer = k_steer * 1 / radius
     t = throttle - abs(steer * k_throttle)
     # print("Radius:",radius)
     # print("Steering:",steer)
     # print("Throttle:",throttle)
-    if steer > 1:
+    if steer > 1: 
         steer = 1
     elif steer < -1:
         steer = -1
+    # print('Steering :: ' + str(steer))
     return t, steer
 
 
@@ -114,43 +128,60 @@ def find_target(path,distance):
 
 
 def create_markers(path):
+    if path.shape[0] <= 1:
+        return np.array([])
+
+    sp = Spline2D(path[:,0], path[:, 1])
+    s = np.arange(0, sp.s[-1], marker_delta)
+
+    # rx, ry = [], []
+    markers = []
+    for i_s in s:
+        ix, iy = sp.calc_position(i_s)
+        # rx.append(ix)
+        # ry.append(iy)
+        markers.append(np.array([ix, iy]))
+    # print(np.array([np.asarray(rx), np.asarray(ry)]).shape)
+    # print(np.asarray(markers).shape)
+    # return np.array([np.asarray(rx), np.asarray(ry)])
+    return np.asarray(markers)
 
     # markers = np.zeros((num_markers,2))
-    markers = []
-    # right_markers = np.zeros((num_markers,2))
-
-    for i in range(num_markers):
-        x = 0
-        y = 0
-
-        marker_dist = i*marker_delta
-        # print("Marker",i)
-        dist = 0
-        dist_found = False
-        for j in range(0,path.shape[0]-1):
-            segment_dist = np.linalg.norm(path[j,:]-path[j+1,:])
-
-            if(dist+segment_dist >= marker_dist and not dist_found):
-                #marker is in this segment
-                weight = (marker_dist - dist) / segment_dist
-                x = weight*path[j+1,0] + (1-weight)*path[j,0]
-                y = weight*path[j+1,1] + (1-weight)*path[j,1]
-                dist_found = True
-                # print("Marker is on this segment.")
-                # break
-                # pass
-            else:
-                dist = dist+segment_dist
-
-        if(dist_found):
-            #place marker at next distance along the path
-            markers.append(np.array([x,y]))
-
-        else:
-            break
-
-    # print("Markers:",markers)
-    return np.asarray(markers)
+    # markers = []
+    # # right_markers = np.zeros((num_markers,2))
+    #
+    # for i in range(num_markers):
+    #     x = 0
+    #     y = 0
+    #
+    #     marker_dist = i*marker_delta
+    #     # print("Marker",i)
+    #     dist = 0
+    #     dist_found = False
+    #     for j in range(0,path.shape[0]-1):
+    #         segment_dist = np.linalg.norm(path[j,:]-path[j+1,:])
+    #
+    #         if(dist+segment_dist >= marker_dist and not dist_found):
+    #             #marker is in this segment
+    #             weight = (marker_dist - dist) / segment_dist
+    #             x = weight*path[j+1,0] + (1-weight)*path[j,0]
+    #             y = weight*path[j+1,1] + (1-weight)*path[j,1]
+    #             dist_found = True
+    #             # print("Marker is on this segment.")
+    #             # break
+    #             # pass
+    #         else:
+    #             dist = dist+segment_dist
+    #
+    #     if(dist_found):
+    #         #place marker at next distance along the path
+    #         markers.append(np.array([x,y]))
+    #
+    #     else:
+    #         break
+    #
+    # # print("Markers:",markers)
+    # return np.asarray(markers)
 
 def create_middle(left_path,right_path):
     middle = []

@@ -85,6 +85,7 @@ void SerialHandler::controlsCallback(
   throttle = throttle > max_throttle ? max_throttle : throttle;
   //  if (abs(steering * 1.5) < 100)
   // steering *= 1.5;
+  steering -= 5;
 
   message_ = ControlMessage{throttle, steering};
 
