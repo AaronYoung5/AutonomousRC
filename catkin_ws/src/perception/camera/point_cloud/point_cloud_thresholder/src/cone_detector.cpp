@@ -27,19 +27,19 @@ PointCloudConeDetector::PointCloudConeDetector(ros::NodeHandle &n)
 void PointCloudConeDetector::cloudCallback(
     const pcl::PCLPointCloud2::ConstPtr &msg) {
   pcl::console::TicToc tt;
-  // std::cerr << "Thresholding...\n", tt.tic();
+  std::cerr << "Thresholding...\n", tt.tic();
   pcl::PCLPointCloud2::Ptr thresholded_msg(new pcl::PCLPointCloud2());
   thresholder_.Threshold(thresholded_msg, msg);
-  // std::cerr << ">> Done: " << tt.toc() << " ms" << std::endl;
+  std::cerr << ">> Done: " << tt.toc() << " ms" << std::endl;
 
   if (visualize_) {
     cloud_pub_.publish(thresholded_msg);
   }
 
-  // std::cerr << "Clustering...\n", tt.tic();
+  std::cerr << "Clustering...\n", tt.tic();
   perception_msgs::ConeDepthMap cone_map;
   clusterer_.Cluster(cone_map, thresholded_msg);
-  // std::cerr << ">> Done: " << tt.toc() << " ms" << std::endl;
+  std::cerr << ">> Done: " << tt.toc() << " ms" << std::endl;
 
   if (visualize_) {
     visualizeCones(cone_map);
@@ -51,8 +51,6 @@ void PointCloudConeDetector::cloudCallback(
 
 void PointCloudConeDetector::visualizeCones(
     perception_msgs::ConeDepthMap &cone_map) {
-  // visualization_msgs::MarkerArray marker_array;
-  // int j = 1;
   visual_tools_->deleteAllMarkers();
   for (perception_msgs::ConeXY cone : cone_map.red_cones) {
     Eigen::Isometry3d pose;
@@ -63,8 +61,8 @@ void PointCloudConeDetector::visualizeCones(
     max_point << 0.075, 0.075, 0.075;
     visual_tools_->publishWireframeCuboid(pose, min_point, max_point,
                                           rviz_visual_tools::RED);
-    // j++;
   }
+
   for (perception_msgs::ConeXY cone : cone_map.green_cones) {
     Eigen::Isometry3d pose;
     pose = Eigen::AngleAxisd(0, Eigen::Vector3d::UnitY());
@@ -74,24 +72,6 @@ void PointCloudConeDetector::visualizeCones(
     max_point << 0.075, 0.075, 0.075;
     visual_tools_->publishWireframeCuboid(pose, min_point, max_point,
                                           rviz_visual_tools::GREEN);
-    // j++;
   }
   visual_tools_->trigger();
-  // if (j > max_markers_) {
-  //   max_markers_ = j;
-  // }
-  // while (j < max_markers_) {
-  //   visualization_msgs::Marker marker;
-  //   marker.header.frame_id = "/zed_left_camera_frame";
-  //   marker.header.stamp = ros::Time::now();
-  //   marker.ns = "basic_shapes";
-  //   marker.id = j++;
-  //   marker.action = visualization_msgs::Marker::ADD;
-  //   marker.scale.x = 0.1;
-  //   marker.scale.y = 0.1;
-  //   marker.scale.z = 0.1;
-  //   marker.color.a = 0.0;
-  //   marker_array.markers.push_back(marker);
-  // }
-  // marker_pub_.publish(marker_array);
 }

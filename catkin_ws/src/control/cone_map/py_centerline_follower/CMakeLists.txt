@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(mpc_control)
+project(py_centerline_follower)
 
 find_package(catkin REQUIRED COMPONENTS
 	roscpp
@@ -7,18 +7,21 @@ find_package(catkin REQUIRED COMPONENTS
 	perception_msgs
 	control_utilities
 	common_utilities
+	rviz_visual_tools
 )
 
 include_directories(
   ${catkin_INCLUDE_DIRS}
-
-  include
 )
+
+catkin_python_setup()
 
 catkin_package(
 
 )
 
-add_executable(mpc_control src/main.cpp src/controller.cpp)
-target_link_libraries(mpc_control ${catkin_LIBRARIES})
-add_dependencies(mpc_controlmpc_control ${catkin_EXPORTED_TARGETS})
+ install(PROGRAMS
+	 nodes/py_centerline_follower
+	 DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+	 )
+

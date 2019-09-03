@@ -9,6 +9,8 @@
 #include <pcl/console/time.h>
 #include <pcl/features/normal_3d.h>
 #include <pcl/filters/extract_indices.h>
+#include <pcl/filters/passthrough.h>
+#include <pcl/filters/radius_outlier_removal.h>
 #include <pcl/filters/voxel_grid.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/kdtree/kdtree.h>
@@ -18,6 +20,7 @@
 #include <pcl/segmentation/extract_clusters.h>
 #include <pcl/segmentation/sac_segmentation.h>
 #include <pcl/visualization/cloud_viewer.h>
+#include <pcl/filters/statistical_outlier_removal.h>
 
 typedef pcl::PointXYZRGBA PointType;
 
@@ -51,14 +54,39 @@ void PointCloudClusterer::Cluster(perception_msgs::ConeDepthMap &depth_map,
   // Create the filtering object: downsample the dataset using a leaf size of
   // 1cm
   pcl::VoxelGrid<PointType> vg;
-  pcl::PointCloud<PointType>::Ptr cloud_filtered(
-      new pcl::PointCloud<PointType>);
+  pcl::PointCloud<PointType>::Ptr cloud_down_sampled(
+      new pcl::PointCloud<PointType>),
+      cloud_filtered1(new pcl::PointCloud<PointType>),
+      cloud_filtered(new pcl::PointCloud<PointType>);
   vg.setInputCloud(cloud);
   vg.setLeafSize(0.01f, 0.01f, 0.01f);
-  vg.filter(*cloud_filtered);
+  vg.filter(*cloud_down_sampled);
   // std::cout << "PointCloud after filtering has: "
   // << cloud_filtered->points.size() << " data points."
   // << std::endl; //*
+
+  // Create the filtering object
+  pcl::PassThrough<PointType> pass;
+  pass.setInputCloud(cloud_down_sampled);
+  pass.setFilterFieldName("x");
+  pass.setFilterLimits(.5, 3);
+  // pass.setFilterLimitsNegative (true);
+  pass.filter(*cloud_filtered);
+
+  // pcl::RadiusOutlierRemoval<PointType> outrem;
+  // build the filter
+  // outrem.setInputCloud(cloud_down_sampled);
+  // outrem.setRadiusSearch(0.04);
+  // outrem.setMinNeighborsInRadius(25);
+  // apply filter
+  // outrem.filter(*cloud_filtered);
+
+  // Create the filtering object
+  // pcl::StatisticalOutlierRemoval<PointType> sor;
+  // sor.setInputCloud (cloud_down_sampled);
+  // sor.setMeanK (50);
+  // sor.setStddevMulThresh (1.0);
+  // sor.filter (*cloud_filtered);
 
   pcl::PointIndices::Ptr inliers(new pcl::PointIndices);
   pcl::PointCloud<PointType>::Ptr cloud_plane(new pcl::PointCloud<PointType>());
@@ -91,7 +119,7 @@ void PointCloudClusterer::Cluster(perception_msgs::ConeDepthMap &depth_map,
   std::vector<pcl::PointIndices> cluster_indices;
   pcl::EuclideanClusterExtraction<PointType> ec;
   ec.setClusterTolerance(.05); // 2cm
-  ec.setMinClusterSize(25);
+  ec.setMinClusterSize(10);
   ec.setMaxClusterSize(10000);
   ec.setSearchMethod(tree);
   ec.setInputCloud(cloud_filtered);

@@ -1,13 +1,5 @@
 #include "point_cloud_thresholder/thresholder.h"
 
-#include <pcl/console/time.h>
-#include <pcl/io/pcd_io.h>
-
-#include <pcl/features/normal_3d.h>
-#include <pcl/filters/conditional_removal.h>
-#include <pcl/filters/voxel_grid.h>
-#include <pcl/segmentation/conditional_euclidean_clustering.h>
-
 PointCloudThresholder::PointCloudThresholder() {}
 
 void PointCloudThresholder::Threshold(

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <package format="2">
-  <name>mpc_control</name>
+  <name>odom_local_planner</name>
   <version>0.0.0</version>
   <description>
-    mpc_control package
+    odom_local_planner package
   </description>
 
   <license>TODO</license>

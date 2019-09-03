@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <package format="2">
-  <name>mpc_control</name>
+  <name>py_centerline_follower</name>
   <version>0.0.0</version>
   <description>
-    mpc_control package
+    circle_through_3_cones package
   </description>
 
   <license>TODO</license>
@@ -14,6 +14,7 @@
   <depend>perception_msgs</depend>
   <depend>control_utilities</depend>
   <depend>common_utilities</depend>
+  <depend>rviz_visual_tools</depend>
 
   <buildtool_depend>catkin</buildtool_depend>
 </package>
