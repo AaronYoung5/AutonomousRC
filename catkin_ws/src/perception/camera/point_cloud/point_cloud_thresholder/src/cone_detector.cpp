@@ -27,19 +27,19 @@ PointCloudConeDetector::PointCloudConeDetector(ros::NodeHandle &n)
 void PointCloudConeDetector::cloudCallback(
     const pcl::PCLPointCloud2::ConstPtr &msg) {
   pcl::console::TicToc tt;
-  std::cerr << "Thresholding...\n", tt.tic();
+  // std::cerr << "Thresholding...\n", tt.tic();
   pcl::PCLPointCloud2::Ptr thresholded_msg(new pcl::PCLPointCloud2());
   thresholder_.Threshold(thresholded_msg, msg);
-  std::cerr << ">> Done: " << tt.toc() << " ms" << std::endl;
+  // std::cerr << ">> Done: " << tt.toc() << " ms" << std::endl;
 
   if (visualize_) {
     cloud_pub_.publish(thresholded_msg);
   }
 
-  std::cerr << "Clustering...\n", tt.tic();
+  // std::cerr << "Clustering...\n", tt.tic();
   perception_msgs::ConeDepthMap cone_map;
   clusterer_.Cluster(cone_map, thresholded_msg);
-  std::cerr << ">> Done: " << tt.toc() << " ms" << std::endl;
+  // std::cerr << ">> Done: " << tt.toc() << " ms" << std::endl;
 
   if (visualize_) {
     visualizeCones(cone_map);

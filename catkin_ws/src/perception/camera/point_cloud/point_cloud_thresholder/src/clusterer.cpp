@@ -60,7 +60,8 @@ void PointCloudClusterer::Cluster(perception_msgs::ConeDepthMap &depth_map,
       cloud_filtered(new pcl::PointCloud<PointType>);
   vg.setInputCloud(cloud);
   vg.setLeafSize(0.01f, 0.01f, 0.01f);
-  vg.filter(*cloud_down_sampled);
+  // vg.filter(*cloud_down_sampled);
+  vg.filter(*cloud_filtered);
   // std::cout << "PointCloud after filtering has: "
   // << cloud_filtered->points.size() << " data points."
   // << std::endl; //*
@@ -71,7 +72,7 @@ void PointCloudClusterer::Cluster(perception_msgs::ConeDepthMap &depth_map,
   pass.setFilterFieldName("x");
   pass.setFilterLimits(.5, 3);
   // pass.setFilterLimitsNegative (true);
-  pass.filter(*cloud_filtered);
+  // pass.filter(*cloud_filtered);
 
   // pcl::RadiusOutlierRemoval<PointType> outrem;
   // build the filter
