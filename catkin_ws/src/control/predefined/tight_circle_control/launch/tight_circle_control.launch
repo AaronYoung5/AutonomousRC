@@ -1,6 +1,0 @@
-<launch>
-        <node pkg="arduino_interface" name="arduino_interface" type="arduino_interface" required="true" output="screen"/>
-
-        <node pkg="tight_circle_control" name ="tight_circle_control" type="tight_circle_control" required="true" output="screen"/>
-</launch>
-               
