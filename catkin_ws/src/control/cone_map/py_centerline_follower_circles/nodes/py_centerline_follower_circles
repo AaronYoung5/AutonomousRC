@@ -63,22 +63,26 @@ def create_path(left_cones,right_cones):
 
     left_ordered = order_points(left_cones,buffer_width)
     right_ordered = order_points(right_cones,-buffer_width)
-    
+
     left_markers = create_markers(left_ordered)
     right_markers = create_markers(right_ordered)
 
+    center_markers = create_middle(left_markers,right_markers)
+
+    target = find_target(center_markers,target_distance)
+
+    print('test')
     plt.scatter(left_ordered[:, 0], left_ordered[:, 1], c="r")
     plt.scatter(right_ordered[:, 0], right_ordered[:, 1], c="g")
 
     plt.plot(left_markers[:, 0], left_markers[:, 1], c="r")
     plt.plot(right_markers[:, 0], right_markers[:, 1], c="g")
 
+    plt.plot(center_markers[:, 0], center_markers[:, 1], c="b")
+    plt.scatter(target[0], target[1], c="b", s=30)
+
     plt.show()
     plt.pause(.1)
-
-    center_markers = create_middle(left_markers,right_markers)
-
-    target = find_target(center_markers,target_distance)
 
     cord_pt = target / 2
     normal = np.array([cord_pt[1],-cord_pt[0]])
@@ -95,7 +99,7 @@ def create_path(left_cones,right_cones):
     # print("Radius:",radius)
     # print("Steering:",steer)
     # print("Throttle:",throttle)
-    if steer > 1: 
+    if steer > 1:
         steer = 1
     elif steer < -1:
         steer = -1

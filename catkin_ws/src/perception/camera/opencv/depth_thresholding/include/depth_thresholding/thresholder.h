@@ -13,8 +13,6 @@ static const std::string THRESH_WINDOW = "Thresholded Image";
 static const std::string CANNY_WINDOW = "Canny Image";
 static const std::string OBJ_WINDOW = "Objects Detected Image";
 
-static const std::string FILE_NAME = "outputcpp.avi";
-
 class Thresholder {
 private:
   image_transport::Subscriber sub_;
@@ -22,16 +20,11 @@ private:
   ros::Publisher pub_;
   image_transport::Publisher cone_pub_;
 
-  cv::VideoWriter video_;
-
   bool image_display_, image_simulated_;
 
 public:
   Thresholder(ros::NodeHandle &n);
-  ~Thresholder() {
-    cv::destroyAllWindows();
-    video_.release();
-  }
+  ~Thresholder() { cv::destroyAllWindows(); }
 
 private:
   void imageCallback(const sensor_msgs::Image::ConstPtr &msg);
