@@ -4,4 +4,5 @@
 **/devel_isolated
 *.output
 *.bag
-CATKIN_IGNORE*
+CATKIN_IGNORE
+.*.swp
