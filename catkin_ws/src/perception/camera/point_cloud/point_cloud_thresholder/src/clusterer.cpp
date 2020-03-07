@@ -41,7 +41,7 @@ void PointCloudClusterer::Cluster(perception_msgs::ConeDepthMap &depth_map,
   // Eigen::Vector3f rotation_vector;
   // rotation_vector << 0, 1, 0;
   //
-  // float theta = M_PI / 9;
+  // float theta = M_PI / 15;
   //
   // Eigen::Affine3f transform_2 = Eigen::Affine3f::Identity();
   // transform_2.translation() << 0, 0, 0;
@@ -60,7 +60,6 @@ void PointCloudClusterer::Cluster(perception_msgs::ConeDepthMap &depth_map,
       cloud_filtered(new pcl::PointCloud<PointType>);
   vg.setInputCloud(cloud);
   vg.setLeafSize(0.01f, 0.01f, 0.01f);
-  // vg.filter(*cloud_down_sampled);
   vg.filter(*cloud_filtered);
   // std::cout << "PointCloud after filtering has: "
   // << cloud_filtered->points.size() << " data points."

@@ -1,10 +1,8 @@
-#include "thresholding/thresholder.h"
+#include "depth_thresholding/thresholder.h"
 
 #include <chrono>
 
-Thresholder::Thresholder(ros::NodeHandle &n)
-    : video_(FILE_NAME, CV_FOURCC('M', 'J', 'P', 'G'), 15,
-             cv::Size(672, 376)) {
+Thresholder::Thresholder(ros::NodeHandle &n) {
   std::string image_topic, cone_topic;
   n.param<std::string>("image_topic", image_topic, "image_data_raw");
   n.param<std::string>("cone_topic", cone_topic, "cone_image_map");
@@ -67,10 +65,7 @@ void Thresholder::imageCallback(const sensor_msgs::Image::ConstPtr &msg) {
     drawDetectedCones(cv_ptr, green_cones, green);
     // Draw red detected cones
     drawDetectedCones(cv_ptr, red_cones, red);
-    cv::cvtColor(cv_ptr->image, cv_ptr->image, cv::COLOR_BGR2RGB);
     cv::imshow(OBJ_WINDOW, cv_ptr->image);
-    cv::cvtColor(cv_ptr->image, cv_ptr->image, cv::COLOR_RGB2BGR);
-    video_ << cv_ptr->image;
   }
 
   perception_msgs::ConeImageMap cone_msg;
@@ -93,7 +88,7 @@ void Thresholder::imageCallback(const sensor_msgs::Image::ConstPtr &msg) {
       std::chrono::duration_cast<std::chrono::microseconds>(end - start);
 
   ROS_DEBUG_STREAM("PERCEPTION :: " << (duration.count() * 1e-3)
-                                    << " milliseconds");
+                                   << " milliseconds");
 }
 
 std::vector<cv::Rect> Thresholder::Threshold(cv_bridge::CvImagePtr &cv_ptr,
